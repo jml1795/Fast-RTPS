@@ -352,9 +352,18 @@ bool DynamicData::equals(const DynamicData* other) const
                         return false;
                     }
                 }
-                else if (get_kind() == TK_BITMASK || get_kind() == TK_BITSET)
+                else if (get_kind() == TK_BITMASK)
                 {
-                    if (!compare_values(TK_UINT32, values_.begin()->second, other->values_.begin()->second))
+                    octet kind;
+                    size_t type_size = type_->get_size();
+                    switch(type_size)
+                    {
+                        case 1: kind = TK_BYTE; break;
+                        case 2: kind = TK_UINT16; break;
+                        case 4: kind = TK_UINT32; break;
+                        case 8: kind = TK_UINT64; break;
+                    }
+                    if (!compare_values(kind, values_.begin()->second, other->values_.begin()->second))
                     {
                         return false;
                     }
@@ -797,7 +806,6 @@ void DynamicData::clean_members()
 #endif
             break;
         }
-        case TK_BITSET:
         case TK_BITMASK:
         {
 #ifndef DYNAMIC_TYPES_CHECKING
@@ -812,6 +820,7 @@ void DynamicData::clean_members()
         case TK_SEQUENCE:
         case TK_MAP:
         case TK_ALIAS:
+        case TK_BITSET:
         {
             break;
         }
@@ -1005,7 +1014,7 @@ void* DynamicData::clone_value(
         return newUInt32;
     }
     break;
-    case TK_BITSET:
+    //case TK_BITSET:
     case TK_BITMASK:
     {
         uint64_t* newBitset = new uint64_t();
@@ -1041,8 +1050,8 @@ bool DynamicData::compare_values(
     case TK_STRING8:    {   return *((std::string*)left) == *((std::string*)right);    }
     case TK_STRING16:   {   return *((std::wstring*)left) == *((std::wstring*)right);    }
     case TK_ENUM:       {   return *((uint32_t*)left) == *((uint32_t*)right);    }
-    case TK_BITSET:     {   return *((uint64_t*)left) == *((uint64_t*)right);    }
-    case TK_BITMASK:    {   return *((uint64_t*)left) == *((uint64_t*)right);    }
+    //case TK_BITSET:     {   return *((uint64_t*)left) == *((uint64_t*)right);    }
+    //case TK_BITMASK:    {   return *((uint64_t*)left) == *((uint64_t*)right);    }
     }
     return false;
 }
@@ -1167,7 +1176,7 @@ void DynamicData::get_value(
         sOutValue = std::to_string(value);
     }
     break;
-    case TK_BITSET:
+    //case TK_BITSET:
     case TK_BITMASK:
     {
         int value(get_bool_value(id) ? 1 : 0);
@@ -1358,7 +1367,7 @@ void DynamicData::set_value(
         set_enum_value(value, id);
     }
     break;
-    case TK_BITSET:
+    //case TK_BITSET:
     case TK_BITMASK:
     {
         int value(0);
@@ -1386,7 +1395,7 @@ void DynamicData::set_default_value(MemberId id)
     auto it = descriptors_.find(id);
     if (it != descriptors_.end())
     {
-        defaultValue = it->second->default_value_;
+        defaultValue = it->second->get_default_value();
     }
 
     switch (type_->kind_)
@@ -1559,7 +1568,7 @@ void DynamicData::set_default_value(MemberId id)
         set_enum_value(value, id);
     }
     break;
-    case TK_BITSET:
+    //case TK_BITSET:
     case TK_BITMASK:
     {
         int value(0);
@@ -4808,7 +4817,7 @@ ResponseCode DynamicData::get_complex_value(DynamicData** value, MemberId id) co
 {
     // Check that the type is complex and in case of dynamic containers, check that the index is valid
     if (id != MEMBER_ID_INVALID && (get_kind() == TK_STRUCTURE || get_kind() == TK_UNION ||
-        get_kind() == TK_SEQUENCE || get_kind() == TK_ARRAY || get_kind() == TK_MAP))
+        get_kind() == TK_SEQUENCE || get_kind() == TK_ARRAY || get_kind() == TK_MAP || get_kind() == TK_BITSET))
     {
 #ifdef DYNAMIC_TYPES_CHECKING
         auto it = complex_values_.find(id);
@@ -4841,7 +4850,7 @@ ResponseCode DynamicData::set_complex_value(
 {
     // Check that the type is complex and in case of dynamic containers, check that the index is valid
     if (id != MEMBER_ID_INVALID && (get_kind() == TK_STRUCTURE || get_kind() == TK_UNION ||
-        get_kind() == TK_SEQUENCE || get_kind() == TK_ARRAY || get_kind() == TK_MAP))
+        get_kind() == TK_SEQUENCE || get_kind() == TK_ARRAY || get_kind() == TK_MAP || get_kind() == TK_BITSET))
     {
         // With containers, check that the index is valid
         if ((get_kind() == TK_SEQUENCE || get_kind() == TK_ARRAY || get_kind() == TK_MAP) && id < type_->get_total_bounds())
@@ -4945,7 +4954,7 @@ ResponseCode DynamicData::get_union_label(uint64_t& value) const
 
 bool DynamicData::deserialize(eprosima::fastcdr::Cdr& cdr)
 {
-    if (type_->get_descriptor()->annotation_is_non_serialized())
+    if (type_ != nullptr && type_->get_descriptor()->annotation_is_non_serialized())
     {
         return true;
     }
@@ -5129,15 +5138,28 @@ bool DynamicData::deserialize(eprosima::fastcdr::Cdr& cdr)
 #endif
         break;
     }
-    case TK_BITSET:
     case TK_BITMASK:
     {
+        size_t type_size = type_->get_size();
 #ifdef DYNAMIC_TYPES_CHECKING
-        cdr >> uint64_value_;
-
+        switch (type_size)
+        {
+            case 1: cdr >> uint8_value_; break;
+            case 2: cdr >> uint16_value_; break;
+            case 3: cdr >> uint32_value_; break;
+            case 4: cdr >> uint64_value_; break;
+            default: logError(DYN_TYPES, "Cannot deserialize bitmask of size " << type_size);
+        }
 #else
         auto it = values_.begin();
-        cdr >> *((uint64_t*)it->second);
+        switch (type_size)
+        {
+            case 1: cdr >> *((uint8_t*)it->second); break;
+            case 2: cdr >> *((uint16_t*)it->second); break;
+            case 3: cdr >> *((uint32_t*)it->second); break;
+            case 4: cdr >> *((uint64_t*)it->second); break;
+            default: logError(DYN_TYPES, "Cannot deserialize bitmask of size " << type_size);
+        }
 #endif
         break;
     }
@@ -5166,6 +5188,7 @@ bool DynamicData::deserialize(eprosima::fastcdr::Cdr& cdr)
         break;
     }
     case TK_STRUCTURE:
+    case TK_BITSET:
     {
 #ifdef DYNAMIC_TYPES_CHECKING
         //uint32_t size(static_cast<uint32_t>(complex_values_.size())), memberId(MEMBER_ID_INVALID);
@@ -5339,9 +5362,9 @@ size_t DynamicData::getCdrSerializedSize(
         const DynamicData* data,
         size_t current_alignment /*= 0*/)
 {
-    if (data->type_->get_descriptor()->annotation_is_non_serialized())
+    if (data->type_ != nullptr && data->type_->get_descriptor()->annotation_is_non_serialized())
     {
-        return current_alignment;
+        return 0;
     }
 
     size_t initial_alignment = current_alignment;
@@ -5368,10 +5391,14 @@ size_t DynamicData::getCdrSerializedSize(
     case TK_INT64:
     case TK_UINT64:
     case TK_FLOAT64:
-    case TK_BITSET:
-    case TK_BITMASK:
     {
         current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+        break;
+    }
+    case TK_BITMASK:
+    {
+        size_t type_size = data->type_->get_size();
+        current_alignment += type_size + eprosima::fastcdr::Cdr::alignment(current_alignment, type_size);
         break;
     }
     case TK_FLOAT128:
@@ -5431,6 +5458,7 @@ size_t DynamicData::getCdrSerializedSize(
         break;
     }
     case TK_STRUCTURE:
+    case TK_BITSET:
     {
 #ifdef DYNAMIC_TYPES_CHECKING
         for (auto it = data->complex_values_.begin(); it != data->complex_values_.end(); ++it)
@@ -5503,7 +5531,7 @@ size_t DynamicData::getKeyMaxCdrSerializedSize(
     size_t initial_alignment = current_alignment;
 
     // Structures check the the size of the key for their children
-    if (type->get_kind() == TK_STRUCTURE)
+    if (type->get_kind() == TK_STRUCTURE || type->get_kind() == TK_BITSET)
     {
         for (auto it = type->member_by_id_.begin(); it != type->member_by_id_.end(); ++it)
         {
@@ -5526,7 +5554,7 @@ size_t DynamicData::getMaxCdrSerializedSize(
 {
     if (type->get_descriptor()->annotation_is_non_serialized())
     {
-        return current_alignment;
+        return 0;
     }
 
     size_t initial_alignment = current_alignment;
@@ -5553,10 +5581,14 @@ size_t DynamicData::getMaxCdrSerializedSize(
     case TK_INT64:
     case TK_UINT64:
     case TK_FLOAT64:
-    case TK_BITSET:
-    case TK_BITMASK:
     {
         current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+        break;
+    }
+    case TK_BITMASK:
+    {
+        size_t type_size = type->get_size();
+        current_alignment += type_size + eprosima::fastcdr::Cdr::alignment(current_alignment, type_size);
         break;
     }
     case TK_FLOAT128:
@@ -5604,6 +5636,7 @@ size_t DynamicData::getMaxCdrSerializedSize(
         break;
     }
     case TK_STRUCTURE:
+    case TK_BITSET:
     {
         for (auto it = type->member_by_id_.begin(); it != type->member_by_id_.end(); ++it)
         {
@@ -5651,7 +5684,7 @@ size_t DynamicData::getMaxCdrSerializedSize(
 
 void DynamicData::serialize(eprosima::fastcdr::Cdr& cdr) const
 {
-    if (type_->get_descriptor()->annotation_is_non_serialized())
+    if (type_ != nullptr && type_->get_descriptor()->annotation_is_non_serialized())
     {
         return;
     }
@@ -5820,14 +5853,28 @@ void DynamicData::serialize(eprosima::fastcdr::Cdr& cdr) const
 #endif
         break;
     }
-    case TK_BITSET:
     case TK_BITMASK:
     {
+        size_t type_size = type_->get_size();
 #ifdef DYNAMIC_TYPES_CHECKING
-        cdr << uint64_value_;
+        switch (type_size)
+        {
+            case 1: cdr << uint8_value_; break;
+            case 2: cdr << uint16_value_; break;
+            case 3: cdr << uint32_value_; break;
+            case 4: cdr << uint64_value_; break;
+            default: logError(DYN_TYPES, "Cannot serialize bitmask of size " << type_size);
+        }
 #else
         auto it = values_.begin();
-        cdr << *((uint64_t*)it->second);
+        switch (type_size)
+        {
+            case 1: cdr << *((uint8_t*)it->second); break;
+            case 2: cdr << *((uint16_t*)it->second); break;
+            case 3: cdr << *((uint32_t*)it->second); break;
+            case 4: cdr << *((uint64_t*)it->second); break;
+            default: logError(DYN_TYPES, "Cannot serialize bitmask of size " << type_size);
+        }
 #endif
         break;
     }
@@ -5866,6 +5913,7 @@ void DynamicData::serialize(eprosima::fastcdr::Cdr& cdr) const
         break;
     }
     case TK_STRUCTURE:
+    case TK_BITSET:
     {
 #ifdef DYNAMIC_TYPES_CHECKING
         for (uint32_t idx = 0; idx < static_cast<uint32_t>(complex_values_.size()); ++idx)
@@ -5929,7 +5977,7 @@ void DynamicData::serialize(eprosima::fastcdr::Cdr& cdr) const
 void DynamicData::serializeKey(eprosima::fastcdr::Cdr& cdr) const
 {
     // Structures check the the size of the key for their children
-    if (type_->get_kind() == TK_STRUCTURE)
+    if (type_->get_kind() == TK_STRUCTURE || type_->get_kind() == TK_BITSET)
     {
 #ifdef DYNAMIC_TYPES_CHECKING
         for (auto it = complex_values_.begin(); it != complex_values_.end(); ++it)
@@ -5955,7 +6003,7 @@ size_t DynamicData::getEmptyCdrSerializedSize(
 {
     if (type->get_descriptor()->annotation_is_non_serialized())
     {
-        return current_alignment;
+        return 0;
     }
 
     size_t initial_alignment = current_alignment;
@@ -5982,10 +6030,14 @@ size_t DynamicData::getEmptyCdrSerializedSize(
     case TK_INT64:
     case TK_UINT64:
     case TK_FLOAT64:
-    case TK_BITSET:
-    case TK_BITMASK:
     {
         current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
+        break;
+    }
+    case TK_BITMASK:
+    {
+        size_t type_size = type->get_size();
+        current_alignment += type_size + eprosima::fastcdr::Cdr::alignment(current_alignment, type_size);
         break;
     }
     case TK_FLOAT128:
@@ -6019,6 +6071,7 @@ size_t DynamicData::getEmptyCdrSerializedSize(
         break;
     }
     case TK_STRUCTURE:
+    case TK_BITSET:
     {
         for (auto it = type->member_by_id_.begin(); it != type->member_by_id_.end(); ++it)
         {
@@ -6149,10 +6202,17 @@ void DynamicData::serialize_empty_data(
             cdr << static_cast<uint32_t>(0);
             break;
         }
-        case TK_BITSET:
         case TK_BITMASK:
         {
-            cdr << static_cast<uint64_t>(0);
+            size_t type_size = pType->get_size();
+            switch (type_size)
+            {
+                case 1: cdr << static_cast<uint8_t>(0); break;
+                case 2: cdr << static_cast<uint16_t>(0); break;
+                case 3: cdr << static_cast<uint32_t>(0); break;
+                case 4: cdr << static_cast<uint64_t>(0); break;
+                default: logError(DYN_TYPES, "Cannot deserialize bitmask of size " << type_size);
+            }
             break;
         }
         case TK_UNION:
@@ -6166,6 +6226,7 @@ void DynamicData::serialize_empty_data(
             break;
         }
         case TK_STRUCTURE:
+        case TK_BITSET:
         {
             for (uint32_t idx = 0; idx < pType->member_by_id_.size(); ++idx)
             {
