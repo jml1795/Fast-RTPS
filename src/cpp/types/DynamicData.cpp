@@ -1789,6 +1789,17 @@ ResponseCode DynamicData::set_int32_value(
         auto it = complex_values_.find(id);
         if (it != complex_values_.end())
         {
+            if (get_kind() == TK_BITSET && it->second->annotation_is_bit_bound()))
+            {
+                uint16_t bit_bound = it->second->annotation_get_bit_bound();
+                int32_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = it->second->set_int32_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -1818,6 +1829,22 @@ ResponseCode DynamicData::set_int32_value(
         }
         else if (id != MEMBER_ID_INVALID)
         {
+            auto itDescriptor = descriptors_.find(id);
+            if (get_kind() == TK_BITSET)
+            {
+                if (itDescriptor == descriptors_.end())
+                {
+                    return ResponseCode::RETCODE_BAD_PARAMETER;
+                }
+                uint16_t bit_bound = ((MemberDescriptor*)itDescriptor->second)->annotation_get_bit_bound();
+                int32_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = ((DynamicData*)it->second)->set_int32_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -1906,6 +1933,17 @@ ResponseCode DynamicData::set_uint32_value(
         auto it = complex_values_.find(id);
         if (it != complex_values_.end())
         {
+            if (get_kind() == TK_BITSET && it->second->annotation_is_bit_bound()))
+            {
+                uint16_t bit_bound = it->second->annotation_get_bit_bound();
+                uint32_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = it->second->set_uint32_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -1935,6 +1973,22 @@ ResponseCode DynamicData::set_uint32_value(
         }
         else if (id != MEMBER_ID_INVALID)
         {
+            auto itDescriptor = descriptors_.find(id);
+            if (get_kind() == TK_BITSET)
+            {
+                if (itDescriptor == descriptors_.end())
+                {
+                    return ResponseCode::RETCODE_BAD_PARAMETER;
+                }
+                uint16_t bit_bound = ((MemberDescriptor*)itDescriptor->second)->annotation_get_bit_bound();
+                uint32_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = ((DynamicData*)it->second)->set_uint32_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2023,6 +2077,17 @@ ResponseCode DynamicData::set_int16_value(
         auto it = complex_values_.find(id);
         if (it != complex_values_.end())
         {
+            if (get_kind() == TK_BITSET && it->second->annotation_is_bit_bound()))
+            {
+                uint16_t bit_bound = it->second->annotation_get_bit_bound();
+                int16_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = it->second->set_int16_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2052,6 +2117,22 @@ ResponseCode DynamicData::set_int16_value(
         }
         else if (id != MEMBER_ID_INVALID)
         {
+            auto itDescriptor = descriptors_.find(id);
+            if (get_kind() == TK_BITSET)
+            {
+                if (itDescriptor == descriptors_.end())
+                {
+                    return ResponseCode::RETCODE_BAD_PARAMETER;
+                }
+                uint16_t bit_bound = ((MemberDescriptor*)itDescriptor->second)->annotation_get_bit_bound();
+                int16_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = ((DynamicData*)it->second)->set_int16_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2140,6 +2221,17 @@ ResponseCode DynamicData::set_uint16_value(
         auto it = complex_values_.find(id);
         if (it != complex_values_.end())
         {
+            if (get_kind() == TK_BITSET && it->second->annotation_is_bit_bound()))
+            {
+                uint16_t bit_bound = it->second->annotation_get_bit_bound();
+                uint16_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = it->second->set_uint16_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2169,6 +2261,22 @@ ResponseCode DynamicData::set_uint16_value(
         }
         else if (id != MEMBER_ID_INVALID)
         {
+            auto itDescriptor = descriptors_.find(id);
+            if (get_kind() == TK_BITSET)
+            {
+                if (itDescriptor == descriptors_.end())
+                {
+                    return ResponseCode::RETCODE_BAD_PARAMETER;
+                }
+                uint16_t bit_bound = ((MemberDescriptor*)itDescriptor->second)->annotation_get_bit_bound();
+                uint16_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = ((DynamicData*)it->second)->set_uint16_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2256,6 +2364,17 @@ ResponseCode DynamicData::set_int64_value(
         auto it = complex_values_.find(id);
         if (it != complex_values_.end())
         {
+            if (get_kind() == TK_BITSET && it->second->annotation_is_bit_bound()))
+            {
+                uint16_t bit_bound = it->second->annotation_get_bit_bound();
+                int64_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = it->second->set_int64_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2285,6 +2404,22 @@ ResponseCode DynamicData::set_int64_value(
         }
         else if (id != MEMBER_ID_INVALID)
         {
+            auto itDescriptor = descriptors_.find(id);
+            if (get_kind() == TK_BITSET)
+            {
+                if (itDescriptor == descriptors_.end())
+                {
+                    return ResponseCode::RETCODE_BAD_PARAMETER;
+                }
+                uint16_t bit_bound = ((MemberDescriptor*)itDescriptor->second)->annotation_get_bit_bound();
+                int64_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = ((DynamicData*)it->second)->set_int64_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2373,6 +2508,17 @@ ResponseCode DynamicData::set_uint64_value(
         auto it = complex_values_.find(id);
         if (it != complex_values_.end())
         {
+            if (get_kind() == TK_BITSET && it->second->annotation_is_bit_bound()))
+            {
+                uint16_t bit_bound = it->second->annotation_get_bit_bound();
+                uint64_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = it->second->set_uint64_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -2402,6 +2548,22 @@ ResponseCode DynamicData::set_uint64_value(
         }
         else if (id != MEMBER_ID_INVALID)
         {
+            auto itDescriptor = descriptors_.find(id);
+            if (get_kind() == TK_BITSET)
+            {
+                if (itDescriptor == descriptors_.end())
+                {
+                    return ResponseCode::RETCODE_BAD_PARAMETER;
+                }
+                uint16_t bit_bound = ((MemberDescriptor*)itDescriptor->second)->annotation_get_bit_bound();
+                uint64_t mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = ((DynamicData*)it->second)->set_uint64_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -3073,6 +3235,17 @@ ResponseCode DynamicData::set_byte_value(
         auto it = complex_values_.find(id);
         if (it != complex_values_.end())
         {
+            if (get_kind() == TK_BITSET && it->second->annotation_is_bit_bound()))
+            {
+                uint16_t bit_bound = it->second->annotation_get_bit_bound();
+                octet mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = it->second->set_byte_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -3102,6 +3275,22 @@ ResponseCode DynamicData::set_byte_value(
         }
         else if (id != MEMBER_ID_INVALID)
         {
+            auto itDescriptor = descriptors_.find(id);
+            if (get_kind() == TK_BITSET)
+            {
+                if (itDescriptor == descriptors_.end())
+                {
+                    return ResponseCode::RETCODE_BAD_PARAMETER;
+                }
+                uint16_t bit_bound = ((MemberDescriptor*)itDescriptor->second)->annotation_get_bit_bound();
+                octet mask = 0x00;
+                for (uint16_t i = 0; i < bit_bound; ++i)
+                {
+                    mask = mask << 1;
+                    mask += 1;
+                }
+                value &= mask;
+            }
             ResponseCode result = ((DynamicData*)it->second)->set_byte_value(value, MEMBER_ID_INVALID);
             if (result == ResponseCode::RETCODE_OK && get_kind() == TK_UNION)
             {
@@ -3926,24 +4115,20 @@ ResponseCode DynamicData::set_enum_value(const std::string& value, MemberId id)
 #endif
 }
 
-ResponseCode DynamicData::set_bitmask_value(
-        bool value,
-        const std::string& name)
+ResponseCode DynamicData::set_bitmask_value(uint64_t value)
 {
-    MemberId id = get_member_id_by_name(name);
-    if (id != MEMBER_ID_INVALID)
+    if (type_->kind_ == TK_BITMASK)
     {
-        return set_bool_value(value, id);
+        return set_uint64_value(value, MEMBER_ID_INVALID);
     }
     return ResponseCode::RETCODE_BAD_PARAMETER;
 }
 
-ResponseCode DynamicData::get_bitmask_value(const std::string& name, bool& value) const
+ResponseCode DynamicData::get_bitmask_value(uint64_t& value) const
 {
-    MemberId id = get_member_id_by_name(name);
-    if (id != MEMBER_ID_INVALID)
+    if (type_->kind_ == TK_BITMASK)
     {
-        return get_bool_value(value, id);
+        return get_uint64_value(value, MEMBER_ID_INVALID);
     }
     return ResponseCode::RETCODE_BAD_PARAMETER;
 }
