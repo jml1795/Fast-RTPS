@@ -46,12 +46,73 @@ class RTPSWriter : public Endpoint
     friend class WriterHistory;
     friend class RTPSParticipantImpl;
     friend class RTPSMessageGroup;
-    protected:
-    RTPSWriter(RTPSParticipantImpl*,GUID_t& guid,WriterAttributes& att,WriterHistory* hist,WriterListener* listen=nullptr);
+
+    RTPSWriter& operator=(const RTPSWriter&) = delete;
+
+protected:
+    RTPSWriter(
+            RTPSParticipantImpl*,
+            GUID_t& guid,
+            WriterAttributes& att,
+            WriterHistory* hist,
+            WriterListener* listen=nullptr);
+
     virtual ~RTPSWriter();
 
-    public:
+    void update_cached_info_nts(
+            std::vector<GUID_t>&& allRemoteReaders,
+            std::vector<LocatorList_t>& allLocatorLists);
 
+    /**
+     * Initialize the header of hte CDRMessages.
+     */
+    void init_header();
+
+    /**
+     * Add a change to the unsent list.
+     * @param change Pointer to the change to add.
+     */
+    virtual void unsent_change_added_to_history(CacheChange_t* change) = 0;
+
+    /**
+     * Indicate the writer that a change has been removed by the history due to some HistoryQos requirement.
+     * @param a_change Pointer to the change that is going to be removed.
+     * @return True if removed correctly.
+     */
+    virtual bool change_removed_by_history(CacheChange_t* a_change) = 0;
+
+    //!Is the data sent directly or announced by HB and THEN send to the ones who ask for it?.
+    bool m_pushMode;
+
+    //!Group created to send messages more efficiently
+    RTPSMessageGroup_t m_cdrmessages;
+
+    //!INdicates if the liveliness has been asserted
+    bool m_livelinessAsserted;
+
+    //!WriterHistory
+    WriterHistory* mp_history;
+
+    //!Listener
+    WriterListener* mp_listener;
+
+    //!Asynchronous publication activated
+    bool is_async_;
+
+    //!Separate sending activated
+    bool m_separateSendingEnabled;
+
+    LocatorList_t mAllShrinkedLocatorList;
+
+    std::vector<GUID_t> mAllRemoteReaders;
+
+#if HAVE_SECURITY
+    SerializedPayload_t encrypt_payload_;
+
+    bool encrypt_cachechange(CacheChange_t* change);
+#endif
+
+public:
     /**
      * Create a new change based with the provided changeKind.
      * @param data Data of the change.
@@ -65,12 +126,24 @@ class RTPSWriter : public Endpoint
             ChangeKind_t changeKind,
             InstanceHandle_t handle = c_InstanceHandle_Unknown)
     {
-        return new_change([data]() -> uint32_t {return (uint32_t)T::getCdrSerializedSize(data);}, changeKind, handle);
+        return new_change(
+            [data]() -> uint32_t
+            {
+                return (uint32_t)T::getCdrSerializedSize(data);
+            }, changeKind, handle);
     }
 
-
-    RTPS_DllAPI CacheChange_t* new_change(const std::function<uint32_t()>& dataCdrSerializedSize,
-            ChangeKind_t changeKind, InstanceHandle_t handle = c_InstanceHandle_Unknown);
+    /**
+     * Create a new change based with the provided changeKind.
+     * @param dataCdrSerializedSize Data size provider of the change.
+     * @param changeKind The type of change.
+     * @param handle InstanceHandle to assign.
+     * @return Pointer to the CacheChange or nullptr if incorrect.
+     */
+    RTPS_DllAPI CacheChange_t* new_change(
+            const std::function<uint32_t()>& dataCdrSerializedSize,
+            ChangeKind_t changeKind,
+            InstanceHandle_t handle = c_InstanceHandle_Unknown);
 
     /**
      * Add a matched reader.
@@ -78,18 +151,21 @@ class RTPSWriter : public Endpoint
      * @return True if added.
      */
     RTPS_DllAPI virtual bool matched_reader_add(RemoteReaderAttributes& ratt) = 0;
+
     /**
      * Remove a matched reader.
      * @param ratt Pointer to the object to remove.
      * @return True if removed.
      */
     RTPS_DllAPI virtual bool matched_reader_remove(const RemoteReaderAttributes& ratt) = 0;
+
     /**
      * Tells us if a specific Reader is matched against this writer
      * @param ratt Pointer to the ReaderProxyData object
      * @return True if it was matched.
      */
     RTPS_DllAPI virtual bool matched_reader_is_matched(const RemoteReaderAttributes& ratt) = 0;
+
     /**
     * Check if a specific change has been acknowledged by all Readers.
     * Is only useful in reliable Writer. In BE Writers returns false when pending to be sent.
@@ -97,13 +173,18 @@ class RTPSWriter : public Endpoint
     */
     RTPS_DllAPI virtual bool is_acked_by_all(const CacheChange_t* /*a_change*/) const { return false; }
 
-    RTPS_DllAPI virtual bool wait_for_all_acked(const Duration_t& /*max_wait*/){ return true; }
+    /**
+    * Waits until all changes were acknowledged or max_wait.
+    * @return True if all were acknowledged.
+    */
+    RTPS_DllAPI virtual bool wait_for_all_acked(const Duration_t& /*max_wait*/) { return true; }
 
     /**
      * Update the Attributes of the Writer.
      * @param att New attributes
      */
     RTPS_DllAPI virtual void updateAttributes(const WriterAttributes& att) = 0;
+
     /**
      * This method triggers the send operation for unsent changes.
      * @return number of messages sent
@@ -128,44 +209,57 @@ class RTPSWriter : public Endpoint
      */
     RTPS_DllAPI uint32_t getTypeMaxSerialized();
 
+    //!Get maximum size of the data
     uint32_t getMaxDataSize();
 
+    //! Calculates the maximum size of the data
     uint32_t calculateMaxDataSize(uint32_t length);
 
     /**
      * Get listener
      * @return Listener
      */
-    RTPS_DllAPI inline WriterListener* getListener(){ return mp_listener; };
+    RTPS_DllAPI inline WriterListener* getListener() { return mp_listener; }
 
     /**
      * Get the asserted liveliness
      * @return Asserted liveliness
      */
-    RTPS_DllAPI inline bool getLivelinessAsserted() { return m_livelinessAsserted; };
+    RTPS_DllAPI inline bool getLivelinessAsserted() { return m_livelinessAsserted; }
 
     /**
-     * Get the asserted liveliness
+     * Set the asserted liveliness
+     * @param l asserted liveliness
      * @return asserted liveliness
      */
-    RTPS_DllAPI inline void setLivelinessAsserted(bool l){ m_livelinessAsserted = l; };
+    RTPS_DllAPI inline void setLivelinessAsserted(bool l) { m_livelinessAsserted = l; }
 
     /**
      * Get the publication mode
      * @return publication mode
      */
-    RTPS_DllAPI inline bool isAsync() const { return is_async_; };
+    RTPS_DllAPI inline bool isAsync() const { return is_async_; }
 
     /**
      * Remove an specified max number of changes
+     * @param max Maximum number of changes to remove.
      * @return at least one change has been removed
      */
     RTPS_DllAPI bool remove_older_changes(unsigned int max = 0);
 
-    virtual bool try_remove_change(std::chrono::microseconds& microseconds, std::unique_lock<std::recursive_mutex>& lock) = 0;
+    /**
+     * Tries to remove a change waiting a maximum of the provided microseconds.
+     * @param microseconds Maximum microseconds to wait for.
+     * @param lock Lock of the Change list.
+     * @return at least one change has been removed
+     */
+    virtual bool try_remove_change(
+            std::chrono::microseconds& microseconds,
+            std::unique_lock<std::recursive_mutex>& lock) = 0;
 
     /*
      * Adds a flow controller that will apply to this writer exclusively.
+     * @param controller
      */
     virtual void add_flow_controller(std::unique_ptr<FlowController> controller) = 0;
 
@@ -173,7 +267,7 @@ class RTPSWriter : public Endpoint
      * Get RTPS participant
      * @return RTPS participant
      */
-    inline RTPSParticipantImpl* getRTPSParticipant() const {return mp_RTPSParticipant;}
+    inline RTPSParticipantImpl* getRTPSParticipant() const { return mp_RTPSParticipant; }
 
     /**
      * Enable or disable sending data to readers separately
@@ -187,59 +281,8 @@ class RTPSWriter : public Endpoint
      * @return true if separate sending is enabled
      */
     bool get_separate_sending () const { return m_separateSendingEnabled; }
-
-    protected:
-
-    //!Is the data sent directly or announced by HB and THEN send to the ones who ask for it?.
-    bool m_pushMode;
-    //!Group created to send messages more efficiently
-    RTPSMessageGroup_t m_cdrmessages;
-    //!INdicates if the liveliness has been asserted
-    bool m_livelinessAsserted;
-    //!WriterHistory
-    WriterHistory* mp_history;
-    //!Listener
-    WriterListener* mp_listener;
-    //!Asynchronous publication activated
-    bool is_async_;
-    //!Separate sending activated
-    bool m_separateSendingEnabled;
-
-    LocatorList_t mAllShrinkedLocatorList;
-
-    std::vector<GUID_t> mAllRemoteReaders;
-
-    void update_cached_info_nts(std::vector<GUID_t>&& allRemoteReaders,
-            std::vector<LocatorList_t>& allLocatorLists);
-
-    /**
-     * Initialize the header of hte CDRMessages.
-     */
-    void init_header();
-
-    /**
-     * Add a change to the unsent list.
-     * @param change Pointer to the change to add.
-     */
-    virtual void unsent_change_added_to_history(CacheChange_t* change)=0;
-
-    /**
-     * Indicate the writer that a change has been removed by the history due to some HistoryQos requirement.
-     * @param a_change Pointer to the change that is going to be removed.
-     * @return True if removed correctly.
-     */
-    virtual bool change_removed_by_history(CacheChange_t* a_change)=0;
-
-#if HAVE_SECURITY
-    SerializedPayload_t encrypt_payload_;
-
-    bool encrypt_cachechange(CacheChange_t* change);
-#endif
-
-    private:
-
-    RTPSWriter& operator=(const RTPSWriter&) = delete;
 };
+
 }
 } /* namespace rtps */
 } /* namespace eprosima */

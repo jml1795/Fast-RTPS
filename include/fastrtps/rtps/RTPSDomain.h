@@ -55,8 +55,6 @@ class RTPSDomain
 {
     typedef std::pair<RTPSParticipant*,RTPSParticipantImpl*> t_p_RTPSParticipant;
 
-    private:
-
     RTPSDomain();
 
     /**
@@ -64,7 +62,23 @@ class RTPSDomain
      */
     ~RTPSDomain();
 
-    public:
+    static std::mutex m_mutex;
+
+    static std::atomic<uint32_t> m_maxRTPSParticipantID;
+
+    static std::vector<t_p_RTPSParticipant> m_RTPSParticipants;
+
+    /**
+     * @brief Get Id to create a RTPSParticipant.
+     * @return Different ID for each call.
+     */
+    static inline uint32_t getNewId() { return m_maxRTPSParticipantID++; }
+
+    static std::set<uint32_t> m_RTPSParticipantIDs;
+
+    static void removeRTPSParticipant_nts(std::vector<t_p_RTPSParticipant>::iterator it);
+
+public:
     /**
      * Method to shut down all RTPSParticipants, readers, writers, etc.
      * It must be called at the end of the process to avoid memory leaks.
@@ -80,8 +94,8 @@ class RTPSDomain
      * @return Pointer to the RTPSParticipant.
      */
     RTPS_DllAPI static RTPSParticipant* createParticipant(
-        const RTPSParticipantAttributes& attrs,
-        RTPSParticipantListener* plisten = nullptr);
+            const RTPSParticipantAttributes& attrs,
+            RTPSParticipantListener* plisten = nullptr);
 
     /**
      * Create a RTPSWriter in a participant.
@@ -92,10 +106,10 @@ class RTPSDomain
      * @return Pointer to the created RTPSWriter.
      */
     RTPS_DllAPI static RTPSWriter* createRTPSWriter(
-        RTPSParticipant* p,
-        WriterAttributes& watt,
-        WriterHistory* hist,
-        WriterListener* listen = nullptr);
+            RTPSParticipant* p,
+            WriterAttributes& watt,
+            WriterHistory* hist,
+            WriterListener* listen = nullptr);
 
     /**
      * Remove a RTPSWriter.
@@ -113,10 +127,10 @@ class RTPSDomain
      * @return Pointer to the created RTPSReader.
      */
     RTPS_DllAPI static RTPSReader* createRTPSReader(
-        RTPSParticipant* p,
-        ReaderAttributes& ratt,
-        ReaderHistory* hist,
-        ReaderListener* listen = nullptr);
+            RTPSParticipant* p,
+            ReaderAttributes& ratt,
+            ReaderHistory* hist,
+            ReaderListener* listen = nullptr);
 
     /**
      * Remove a RTPSReader.
@@ -136,31 +150,11 @@ class RTPSDomain
      * Set the maximum RTPSParticipantID.
      * @param maxRTPSParticipantId ID.
      */
-    static inline void setMaxRTPSParticipantId(uint32_t maxRTPSParticipantId) {
+    static inline void setMaxRTPSParticipantId(uint32_t maxRTPSParticipantId)
+    {
         m_maxRTPSParticipantID = maxRTPSParticipantId;
     }
-
-
-
-    private:
-    static std::mutex m_mutex;
-
-    static std::atomic<uint32_t> m_maxRTPSParticipantID;
-
-    static std::vector<t_p_RTPSParticipant> m_RTPSParticipants;
-
-    /**
-     * @brief Get Id to create a RTPSParticipant.
-     * @return Different ID for each call.
-     */
-    static inline uint32_t getNewId() {return m_maxRTPSParticipantID++;}
-
-    static std::set<uint32_t> m_RTPSParticipantIDs;
-
-    static void removeRTPSParticipant_nts(std::vector<t_p_RTPSParticipant>::iterator it);
-
 };
-
 
 }
 } /* namespace  */

@@ -46,10 +46,16 @@ class PublisherImpl;
 class RTPS_DllAPI Publisher
 {
     friend class PublisherImpl;
+
     virtual ~Publisher();
 
-    public:
+    PublisherImpl* mp_impl;
 
+public:
+    /**
+     * Constructor from a PublisherImpl pointer
+     * @param pimpl Actual implementation of the publisher
+     */
     Publisher(PublisherImpl* pimpl);
 
     /**
@@ -69,7 +75,9 @@ class RTPS_DllAPI Publisher
      * @par Calling example:
      * @snippet fastrtps_example.cpp ex_PublisherWrite
      */
-    bool write(void*Data, rtps::WriteParams &wparams);
+    bool write(
+            void*Data,
+            rtps::WriteParams &wparams);
 
     /**
      * Dispose of a previously written data.
@@ -77,12 +85,14 @@ class RTPS_DllAPI Publisher
      * @return True if correct.
      */
     bool dispose(void*Data);
+
     /**
      * Unregister a previously written data.
      * @param Data Pointer to the data.
      * @return True if correct.
      */
     bool unregister(void*Data);
+
     /**
      * Dispose and unregister a previously written data.
      * @param Data Pointer to the data.
@@ -97,6 +107,11 @@ class RTPS_DllAPI Publisher
      */
     bool removeAllChange(size_t* removed = nullptr);
 
+    /**
+    * Waits until all changes were acknowledged or max_wait.
+    * @param max_wait Maximum time to wait until all changes are acknowledged.
+    * @return True if all were acknowledged.
+    */
     bool wait_for_all_acked(const rtps::Time_t& max_wait);
 
     /**
@@ -117,10 +132,6 @@ class RTPS_DllAPI Publisher
      * @return True if correctly updated, false if ANY of the updated parameters cannot be updated.
      */
     bool updateAttributes(const PublisherAttributes& att);
-
-    private:
-
-    PublisherImpl* mp_impl;
 };
 
 } /* namespace fastrtps */

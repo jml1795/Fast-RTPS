@@ -40,10 +40,14 @@ class SampleInfo_t;
 class RTPS_DllAPI Subscriber
 {
     friend class SubscriberImpl;
-    virtual ~Subscriber(){}
+
+    virtual ~Subscriber() {}
+
+    SubscriberImpl* mp_impl;
 
 public:
     /**
+     * Constructor from a SubscriberImpl pointer
      * @param pimpl Actual implementation of the subscriber
      */
     Subscriber(SubscriberImpl* pimpl) : mp_impl(pimpl) {}
@@ -65,14 +69,19 @@ public:
      * @param info Pointer to a SampleInfo_t structure that informs you about your sample.
      * @return True if a sample was read.
      */
-    bool readNextData(void* data,SampleInfo_t* info);
+    bool readNextData(
+            void* data,
+            SampleInfo_t* info);
+
     /**
      * Take next Data from the Subscriber. The data is removed from the subscriber.
      * @param data Pointer to the object where you want the data stored.
      * @param info Pointer to a SampleInfo_t structure that informs you about your sample.
      * @return True if a sample was taken.
      */
-    bool takeNextData(void* data,SampleInfo_t* info);
+    bool takeNextData(
+            void* data,
+            SampleInfo_t* info);
 
     /**
      * Update the Attributes of the subscriber;
@@ -100,9 +109,6 @@ public:
      * @return Unread count
      */
     uint64_t getUnreadCount() const;
-
-private:
-    SubscriberImpl* mp_impl;
 };
 
 

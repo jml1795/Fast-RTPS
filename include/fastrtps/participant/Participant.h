@@ -46,16 +46,13 @@ class RTPS_DllAPI Participant
     friend class Domain;
     friend class ParticipantImpl;
 
-    private:
-
     Participant();
 
     virtual ~Participant();
 
     ParticipantImpl* mp_impl;
 
-    public:
-
+public:
     /**
      *	Get the rtps::GUID_t of the associated RTPSParticipant.
      * @return rtps::GUID_t
@@ -78,14 +75,33 @@ class RTPS_DllAPI Participant
      * @param kind EndpointKind (WRITER or READER)
      * @return True if correctly found and activated.
      */
-    bool newRemoteEndpointDiscovered(const rtps::GUID_t& partguid, uint16_t userId,
+    bool newRemoteEndpointDiscovered(
+            const rtps::GUID_t& partguid,
+            uint16_t userId,
             rtps::EndpointKind_t kind);
 
+    /**
+     * Returns a list with the participant names.
+     * @return list of participant names.
+     */
     std::vector<std::string> getParticipantNames() const;
 
-    bool get_remote_writer_info(const rtps::GUID_t& writerGuid, rtps::WriterProxyData& returnedInfo);
-
-    bool get_remote_reader_info(const rtps::GUID_t& readerGuid, rtps::ReaderProxyData& returnedInfo);
+    /**
+     * Retrieves remote write information.
+     * @param writerGuid GUID of the writer.
+     * @param returnedInfo WriterProxyData to be filled.
+     */
+    bool get_remote_writer_info(
+            const rtps::GUID_t& writerGuid,
+            rtps::WriterProxyData& returnedInfo);
+    /**
+     * Retrieves remote reader information.
+     * @param readerGuid GUID of the reader.
+     * @param returnedInfo ReaderProxyData to be filled.
+     */
+    bool get_remote_reader_info(
+            const rtps::GUID_t& readerGuid,
+            rtps::ReaderProxyData& returnedInfo);
 };
 
 }
