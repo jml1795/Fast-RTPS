@@ -38,11 +38,44 @@ namespace fastrtps{
  */
 class PublisherAttributes
 {
+    //!User Defined ID, used for StaticEndpointDiscovery, default value -1.
+    int16_t m_userDefinedID;
+
+    //!Entity ID, if the user want to specify the EntityID of the enpoint, default value -1.
+    int16_t m_entityID;
+
 public:
-    PublisherAttributes() :
-        historyMemoryPolicy(rtps::PREALLOCATED_MEMORY_MODE),
-        m_userDefinedID(-1),
-        m_entityID(-1)
+    //!Topic Attributes for the Publisher
+    TopicAttributes topic;
+
+    //!QOS for the Publisher
+    WriterQos qos;
+
+    //!Writer Attributes
+    rtps::WriterTimes times;
+
+    //!Unicast locator list
+    rtps::LocatorList_t unicastLocatorList;
+
+    //!Multicast locator list
+    rtps::LocatorList_t multicastLocatorList;
+
+    //!Remote locator list
+    rtps::LocatorList_t remoteLocatorList;
+
+    //!Throughput controller
+    rtps::ThroughputControllerDescriptor throughputController;
+
+    //!Underlying History memory policy
+    rtps::MemoryManagementPolicy_t historyMemoryPolicy;
+
+    //!Properties
+    rtps::PropertyPolicy properties;
+
+    PublisherAttributes()
+        : m_userDefinedID(-1)
+        , m_entityID(-1)
+        , historyMemoryPolicy(rtps::PREALLOCATED_MEMORY_MODE)
     {}
 
     virtual ~PublisherAttributes(){}
@@ -61,35 +94,17 @@ public:
                (this->properties == b.properties);
     }
 
-    //!Topic Attributes for the Publisher
-    TopicAttributes topic;
-    //!QOS for the Publisher
-    WriterQos qos;
-    //!Writer Attributes
-    rtps::WriterTimes times;
-    //!Unicast locator list
-    rtps::LocatorList_t unicastLocatorList;
-    //!Multicast locator list
-    rtps::LocatorList_t multicastLocatorList;
-    //!Remote locator list
-    rtps::LocatorList_t remoteLocatorList;
-    //!Throughput controller
-    rtps::ThroughputControllerDescriptor throughputController;
-    //!Underlying History memory policy
-    rtps::MemoryManagementPolicy_t historyMemoryPolicy;
-    rtps::PropertyPolicy properties;
-
     /**
      * Get the user defined ID
      * @return User defined ID
      */
-    inline int16_t getUserDefinedID() const {return m_userDefinedID;}
+    inline int16_t getUserDefinedID() const { return m_userDefinedID; }
 
     /**
      * Get the entity defined ID
      * @return Entity ID
      */
-    inline int16_t getEntityID() const {return m_entityID;}
+    inline int16_t getEntityID() const { return m_entityID; }
 
     /**
      * Set the user defined ID
@@ -102,11 +117,6 @@ public:
      * @param id Entity ID to be set
      */
     inline void setEntityID(uint8_t id) { m_entityID = id; }
-private:
-    //!User Defined ID, used for StaticEndpointDiscovery, default value -1.
-    int16_t m_userDefinedID;
-    //!Entity ID, if the user want to specify the EntityID of the enpoint, default value -1.
-    int16_t m_entityID;
 };
 
 }

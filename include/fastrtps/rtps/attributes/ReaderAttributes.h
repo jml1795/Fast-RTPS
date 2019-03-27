@@ -29,12 +29,16 @@ namespace rtps{
 
 
 /**
- * Class ReaderTimes, defining the times associated with the Reliable Readers events.
+ * Struct ReaderTimes, defining the times associated with the Reliable Readers events.
  * @ingroup RTPS_ATTRIBUTES_MODULE
  */
-class ReaderTimes
+struct ReaderTimes
 {
-public:
+    //!Initial AckNack delay. Default value ~70ms.
+    Duration_t initialAcknackDelay;
+    //!Delay to be applied when a hearbeat message is received, default value ~5ms.
+    Duration_t heartbeatResponseDelay;
+
     ReaderTimes()
     {
         initialAcknackDelay.fraction = 300*1000*1000;
@@ -48,77 +52,73 @@ public:
         return (this->initialAcknackDelay == b.initialAcknackDelay)  &&
                (this->heartbeatResponseDelay == b.heartbeatResponseDelay);
     }
-
-    //!Initial AckNack delay. Default value ~70ms.
-    Duration_t initialAcknackDelay;
-    //!Delay to be applied when a hearbeat message is received, default value ~5ms.
-    Duration_t heartbeatResponseDelay;
 };
 
 /**
- * Class ReaderAttributes, to define the attributes of a RTPSReader.
+ * Struct ReaderAttributes, to define the attributes of a RTPSReader.
  * @ingroup RTPS_ATTRIBUTES_MODULE
  */
-class  ReaderAttributes
+struct  ReaderAttributes
 {
-    public:
+    //!Attributes of the associated endpoint.
+    EndpointAttributes endpoint;
 
-        ReaderAttributes() : expectsInlineQos(false)
-        {
-            endpoint.endpointKind = READER;
-            endpoint.durabilityKind = VOLATILE;
-            endpoint.reliabilityKind = BEST_EFFORT;
-        };
+    //!Times associated with this reader.
+    ReaderTimes times;
 
-        virtual ~ReaderAttributes(){};
+    //!Indicates if the reader expects Inline qos, default value 0.
+    bool expectsInlineQos;
 
-        //!Attributes of the associated endpoint.
-        EndpointAttributes endpoint;
+    ReaderAttributes() : expectsInlineQos(false)
+    {
+        endpoint.endpointKind = READER;
+        endpoint.durabilityKind = VOLATILE;
+        endpoint.reliabilityKind = BEST_EFFORT;
+    };
 
-        //!Times associated with this reader.
-        ReaderTimes times;
-
-        //!Indicates if the reader expects Inline qos, default value 0.
-        bool expectsInlineQos;
+    virtual ~ReaderAttributes(){};
 };
 
 /**
- * Class RemoteWriterAttributes, to define the attributes of a Remote Writer.
+ * Struct RemoteWriterAttributes, to define the attributes of a Remote Writer.
  * @ingroup RTPS_ATTRIBUTES_MODULE
  */
-class  RemoteWriterAttributes
+struct  RemoteWriterAttributes
 {
-    public:
-        RemoteWriterAttributes() : livelinessLeaseDuration(c_TimeInfinite), ownershipStrength(0),
-        is_eprosima_endpoint(true)
-        {
-            endpoint.endpointKind = WRITER;
-        }
+    //!Attributes of the associated endpoint.
+    EndpointAttributes endpoint;
 
-        RemoteWriterAttributes(const VendorId_t& vendor_id) : livelinessLeaseDuration(c_TimeInfinite), ownershipStrength(0),
-        is_eprosima_endpoint(vendor_id == c_VendorId_eProsima)
-        {
-            endpoint.endpointKind = WRITER;
-        }
+    //!GUID_t of the writer, can be unknown if the reader is best effort.
+    GUID_t guid;
 
-        virtual ~RemoteWriterAttributes()
-        {
+    //!Liveliness lease duration, default value c_TimeInfinite.
+    Duration_t livelinessLeaseDuration;
 
-        }
+    //!Ownership Strength of the associated writer.
+    uint16_t ownershipStrength;
 
-        //!Attributes of the associated endpoint.
-        EndpointAttributes endpoint;
+    bool is_eprosima_endpoint;
 
-        //!GUID_t of the writer, can be unknown if the reader is best effort.
-        GUID_t guid;
+    RemoteWriterAttributes()
+        : livelinessLeaseDuration(c_TimeInfinite)
+        , ownershipStrength(0)
+        , is_eprosima_endpoint(true)
+    {
+        endpoint.endpointKind = WRITER;
+    }
 
-        //!Liveliness lease duration, default value c_TimeInfinite.
-        Duration_t livelinessLeaseDuration;
+    RemoteWriterAttributes(const VendorId_t& vendor_id)
+        : livelinessLeaseDuration(c_TimeInfinite)
+        , ownershipStrength(0)
+        , is_eprosima_endpoint(vendor_id == c_VendorId_eProsima)
+    {
+        endpoint.endpointKind = WRITER;
+    }
 
-        //!Ownership Strength of the associated writer.
-        uint16_t ownershipStrength;
+    virtual ~RemoteWriterAttributes()
+    {
 
-        bool is_eprosima_endpoint;
+    }
 };
 }
 }

@@ -37,12 +37,20 @@ typedef enum RTPSWriterPublishMode : octet
 
 
 /**
- * Class WriterTimes, defining the times associated with the Reliable Writers events.
+ * Struct WriterTimes, defining the times associated with the Reliable Writers events.
  * @ingroup RTPS_ATTRIBUTES_MODULE
  */
-class  WriterTimes
+struct  WriterTimes
 {
-public:
+    //! Initial heartbeat delay. Default value ~11ms.
+    Duration_t initialHeartbeatDelay;
+    //! Periodic HB period, default value 3s.
+    Duration_t heartbeatPeriod;
+    //!Delay to apply to the response of a ACKNACK message, default value ~5ms.
+    Duration_t nackResponseDelay;
+    //!This time allows the RTPSWriter to ignore nack messages too soon after the data as sent, default value 0s.
+    Duration_t nackSupressionDuration;
+
     WriterTimes()
     {
         initialHeartbeatDelay.fraction = 50*1000*1000;
@@ -59,87 +67,75 @@ public:
                (this->nackResponseDelay == b.nackResponseDelay) &&
                (this->nackSupressionDuration == b.nackSupressionDuration);
     }
-
-    //! Initial heartbeat delay. Default value ~11ms.
-    Duration_t initialHeartbeatDelay;
-    //! Periodic HB period, default value 3s.
-    Duration_t heartbeatPeriod;
-    //!Delay to apply to the response of a ACKNACK message, default value ~5ms.
-    Duration_t nackResponseDelay;
-    //!This time allows the RTPSWriter to ignore nack messages too soon after the data as sent, default value 0s.
-    Duration_t nackSupressionDuration;
 };
 
 /**
- * Class WriterAttributes, defining the attributes of a RTPSWriter.
+ * Struct WriterAttributes, defining the attributes of a RTPSWriter.
  * @ingroup RTPS_ATTRIBUTES_MODULE
  */
-class  WriterAttributes
+struct  WriterAttributes
 {
-    public:
+    //!Attributes of the associated endpoint.
+    EndpointAttributes endpoint;
 
-        WriterAttributes() : mode(SYNCHRONOUS_WRITER),
-            disableHeartbeatPiggyback(false)
-        {
-            endpoint.endpointKind = WRITER;
-            endpoint.durabilityKind = TRANSIENT_LOCAL;
-            endpoint.reliabilityKind = RELIABLE;
-        }
+    //!Writer Times (only used for RELIABLE).
+    WriterTimes times;
 
-        virtual ~WriterAttributes(){}
+    //!Indicates if the Writer is synchronous or asynchronous
+    RTPSWriterPublishMode mode;
 
-        //!Attributes of the associated endpoint.
-        EndpointAttributes endpoint;
+    // Throughput controller, always the last one to apply
+    ThroughputControllerDescriptor throughputController;
 
-        //!Writer Times (only used for RELIABLE).
-        WriterTimes times;
+    //! Disable the sending of heartbeat piggybacks.
+    bool disableHeartbeatPiggyback;
 
-        //!Indicates if the Writer is synchronous or asynchronous
-        RTPSWriterPublishMode mode;
+    WriterAttributes() : mode(SYNCHRONOUS_WRITER),
+        disableHeartbeatPiggyback(false)
+    {
+        endpoint.endpointKind = WRITER;
+        endpoint.durabilityKind = TRANSIENT_LOCAL;
+        endpoint.reliabilityKind = RELIABLE;
+    }
 
-        // Throughput controller, always the last one to apply
-        ThroughputControllerDescriptor throughputController;
-
-        //! Disable the sending of heartbeat piggybacks.
-        bool disableHeartbeatPiggyback;
+    virtual ~WriterAttributes(){}
 };
 
 /**
- * Class RemoteReaderAttributes, to define the attributes of a Remote Reader.
+ * Struct RemoteReaderAttributes, to define the attributes of a Remote Reader.
  * @ingroup RTPS_ATTRIBUTES_MODULE
  */
-class  RemoteReaderAttributes
+struct RemoteReaderAttributes
 {
-    public:
+    //!Attributes of the associated endpoint.
+    EndpointAttributes endpoint;
 
-        RemoteReaderAttributes() : expectsInlineQos(false),
-        is_eprosima_endpoint(true)
-        {
-            endpoint.endpointKind = READER;
-        }
+    //!GUID_t of the reader.
+    GUID_t guid;
 
-        RemoteReaderAttributes(const VendorId_t& vendor_id) : expectsInlineQos(false),
-        is_eprosima_endpoint(vendor_id == c_VendorId_eProsima)
-        {
-            endpoint.endpointKind = READER;
-        }
+    //!Expects inline QOS.
+    bool expectsInlineQos;
 
-        virtual ~RemoteReaderAttributes()
-        {
+    //!eProsima's endpoint?
+    bool is_eprosima_endpoint;
 
-        }
+    RemoteReaderAttributes()
+        : expectsInlineQos(false)
+        , is_eprosima_endpoint(true)
+    {
+        endpoint.endpointKind = READER;
+    }
 
-        //!Attributes of the associated endpoint.
-        EndpointAttributes endpoint;
+    RemoteReaderAttributes(const VendorId_t& vendor_id)
+        : expectsInlineQos(false)
+        , is_eprosima_endpoint(vendor_id == c_VendorId_eProsima)
+    {
+        endpoint.endpointKind = READER;
+    }
 
-        //!GUID_t of the reader.
-        GUID_t guid;
-
-        //!Expects inline QOS.
-        bool expectsInlineQos;
-
-        bool is_eprosima_endpoint;
+    virtual ~RemoteReaderAttributes() {}
 };
+
 }
 }
 }
