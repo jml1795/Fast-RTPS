@@ -54,12 +54,16 @@ class RTPSWriter : public Endpoint
 
     /**
      * Create a new change based with the provided changeKind.
+     * @param data Data of the change.
      * @param changeKind The type of change.
      * @param handle InstanceHandle to assign.
      * @return Pointer to the CacheChange or nullptr if incorrect.
      */
     template<typename T>
-    CacheChange_t* new_change(T &data, ChangeKind_t changeKind, InstanceHandle_t handle = c_InstanceHandle_Unknown)
+    CacheChange_t* new_change(
+            T &data,
+            ChangeKind_t changeKind,
+            InstanceHandle_t handle = c_InstanceHandle_Unknown)
     {
         return new_change([data]() -> uint32_t {return (uint32_t)T::getCdrSerializedSize(data);}, changeKind, handle);
     }

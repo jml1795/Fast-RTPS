@@ -173,12 +173,15 @@ class RTPSMessageGroup
          * @param writerSN Sequence number being nack'ed.
          * @param fnState Set of missing fragment numbers.
          * @param count Counting identifier.
-         * @param finalFlag Should final flag be set?
          * @param locators List of destination locators.
          * @return True when message was added to the group.
          */
-        bool add_nackfrag(const std::vector<GUID_t>& remote_writers, SequenceNumber_t& writerSN,
-                FragmentNumberSet_t fnState, int32_t count, const LocatorList_t locators);
+        bool add_nackfrag(
+                const std::vector<GUID_t>& remote_writers,
+                SequenceNumber_t& writerSN,
+                FragmentNumberSet_t fnState,
+                int32_t count,
+                const LocatorList_t locators);
 
         uint32_t get_current_bytes_processed() { return currentBytesSent_ + full_msg_->length; }
 

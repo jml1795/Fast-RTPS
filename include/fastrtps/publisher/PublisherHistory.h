@@ -46,10 +46,10 @@ class PublisherHistory:public rtps::WriterHistory
         /**
          * Constructor of the PublisherHistory.
          * @param pimpl Pointer to the PublisherImpl.
-         * @param payloadInitialSize Initial payload size.
-         * @param mempolicy Set wether the payloads ccan dynamically resized or not.
+         * @param payloadMax Maximum payload size.
          * @param history QOS of the associated History.
          * @param resource ResourceLimits for the History.
+         * @param mempolicy Set wether the payloads ccan dynamically resized or not.
          */
         PublisherHistory(
             PublisherImpl* pimpl,
@@ -64,10 +64,12 @@ class PublisherHistory:public rtps::WriterHistory
          * Add a change comming from the Publisher.
          * @param change Pointer to the change
          * @param wparams Extra write parameters.
-         * @param wparams
+         * @param lock
          * @return True if added.
          */
-        bool add_pub_change(rtps::CacheChange_t* change, rtps::WriteParams &wparams,
+        bool add_pub_change(
+                rtps::CacheChange_t* change,
+                rtps::WriteParams &wparams,
                 std::unique_lock<std::recursive_mutex>& lock);
 
         /**

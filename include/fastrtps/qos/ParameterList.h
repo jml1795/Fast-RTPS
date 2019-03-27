@@ -69,23 +69,31 @@ class ParameterList
          * Update the CDRMessage of a parameterList.
          * @param msg Pointer to the message (the pos should be correct, otherwise the behaviour is undefined).
          * @param plist Pointer to the parameterList.
+         * @param use_encapsulation Flag to apply encapsulation.
          * @return True if correct.
          */
-        static bool writeParameterListToCDRMsg(rtps::CDRMessage_t* msg, ParameterList_t* plist, bool use_encapsulation);
+        static bool writeParameterListToCDRMsg(
+                rtps::CDRMessage_t* msg,
+                ParameterList_t* plist,
+                bool use_encapsulation);
 
         /**
          * Read a parameterList from a CDRMessage
          * @param[in] msg Pointer to the message (the pos should be correct, otherwise the behaviour is undefined).
          * @param[out] plist Pointer to the parameter list.
          * @param[out] change Pointer to the cache change.
+         * @param[in] encapsulation Flag to mark the msg as encapsulated.
          * @return Number of bytes of the parameter list.
          */
-        static int32_t readParameterListfromCDRMsg(rtps::CDRMessage_t* msg, ParameterList_t* plist, rtps::CacheChange_t* change,
+        static int32_t readParameterListfromCDRMsg(
+                rtps::CDRMessage_t* msg,
+                ParameterList_t* plist,
+                rtps::CacheChange_t* change,
                 bool encapsulation);
 
         /**
          * Read change instanceHandle from the KEY_HASH or another specific PID parameter of a CDRMessage
-         * @param[in-out] change Pointer to the cache change.
+         * @param[in,out] change Pointer to the cache change.
          * @param[in] pid Specific PID to search
          * @return True when instanceHandle is updated.
          */

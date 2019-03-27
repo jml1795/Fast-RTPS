@@ -62,7 +62,7 @@ class Log
     public:
     /**
     * Types of log entry.
-    * * Error: Maximum priority. Can only be disabled statically through #define LOG_NO_ERROR.
+    * * Error: Maximum priority. Can only be disabled statically through LOG_NO_ERROR.
     * * Warning: Medium priority.  Can be disabled statically and dynamically.
     * * Info: Low priority. Useful for debugging. Disabled by default on release branches.
     */
@@ -78,7 +78,7 @@ class Log
     * There is a default stdout consumer active as default.
     * @param consumer r-value to a consumer unique_ptr. It will be invalidated after the call.
     */
-    RTPS_DllAPI static void RegisterConsumer(std::unique_ptr<LogConsumer> &&);
+    RTPS_DllAPI static void RegisterConsumer(std::unique_ptr<LogConsumer>&& consumer);
     //! Removes all registered consumers, including the default stdout.
     RTPS_DllAPI static void ClearConsumers();
     //! Enables the reporting of filenames in log entries. Disabled by default.
@@ -90,11 +90,11 @@ class Log
     //! Returns the current verbosity level.
     RTPS_DllAPI static Log::Kind GetVerbosity();
     //! Sets a filter that will pattern-match against log categories, dropping any unmatched categories.
-    RTPS_DllAPI static void SetCategoryFilter(const std::regex &);
+    RTPS_DllAPI static void SetCategoryFilter(const std::regex&);
     //! Sets a filter that will pattern-match against filenames, dropping any unmatched categories.
-    RTPS_DllAPI static void SetFilenameFilter(const std::regex &);
+    RTPS_DllAPI static void SetFilenameFilter(const std::regex&);
     //! Sets a filter that will pattern-match against the provided error string, dropping any unmatched categories.
-    RTPS_DllAPI static void SetErrorStringFilter(const std::regex &);
+    RTPS_DllAPI static void SetErrorStringFilter(const std::regex&);
     //! Returns the logging engine to configuration defaults.
     RTPS_DllAPI static void Reset();
     //! Stops the logging thread. It will re-launch on the next call to a successful log macro.
@@ -124,7 +124,7 @@ class Log
     *  * logWarning(cat, msg);
     *  * logError(cat, msg);
     */
-    RTPS_DllAPI static void QueueLog(const std::string &message, const Log::Context &, Log::Kind);
+    RTPS_DllAPI static void QueueLog(const std::string& message, const Log::Context&, Log::Kind);
 
   private:
     struct Resources
@@ -159,10 +159,10 @@ class Log
     // Applies transformations to the entries compliant with the options selected (such as
     // erasure of certain context information, or filtering by category. Returns false
     // if the log entry is blacklisted.
-    static bool Preprocess(Entry &);
+    static bool Preprocess(Entry&);
     static void LaunchThread();
     static void Run();
-    static void GetTimestamp(std::string &);
+    static void GetTimestamp(std::string&);
 };
 
 /**
@@ -172,14 +172,14 @@ class LogConsumer
 {
   public:
     virtual ~LogConsumer(){};
-    virtual void Consume(const Log::Entry &) = 0;
+    virtual void Consume(const Log::Entry&) = 0;
 
   protected:
-    void PrintTimestamp(std::ostream &stream, const Log::Entry &, bool color) const;
-    void PrintHeader(std::ostream &stream, const Log::Entry &, bool color) const;
-    void PrintContext(std::ostream &stream, const Log::Entry &, bool color) const;
-    void PrintMessage(std::ostream &stream, const Log::Entry &, bool color) const;
-    void PrintNewLine(std::ostream &stream, bool color) const;
+    void PrintTimestamp(std::ostream& stream, const Log::Entry&, bool color) const;
+    void PrintHeader(std::ostream& stream, const Log::Entry&, bool color) const;
+    void PrintContext(std::ostream& stream, const Log::Entry&, bool color) const;
+    void PrintMessage(std::ostream& stream, const Log::Entry&, bool color) const;
+    void PrintNewLine(std::ostream& stream, bool color) const;
 };
 
 #if defined(WIN32)

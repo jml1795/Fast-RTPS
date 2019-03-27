@@ -50,11 +50,12 @@ class SubscriberHistory: public rtps::ReaderHistory
         typedef std::vector<t_p_I_Change> t_v_Inst_Caches;
 
         /**
-         * Constructor. Requires information about the subscriner
-         * @param pimpl Pointer to the subscriber implementation
-         * @param payloadMax Maximum payload size per change
-         * @param history History QoS policy for the reader
-         * @param resource Resource Limit QoS policy for the reader
+         * Constructor. Requires information about the subscriber.
+         * @param pimpl Pointer to the subscriber implementation.
+         * @param payloadMax Maximum payload size per change.
+         * @param history History QoS policy for the reader.
+         * @param resource Resource Limit QoS policy for the reader.
+         * @param mempolicy Set wether the payloads ccan dynamically resized or not.
          */
         SubscriberHistory(
             SubscriberImpl* pimpl,

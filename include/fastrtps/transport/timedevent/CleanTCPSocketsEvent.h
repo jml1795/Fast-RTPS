@@ -39,10 +39,15 @@ public:
 	/**
 	 * Constructor
 	 * @param p_transport Pointer to the TCPTransportInterface object.
+	 * @param service Reference to the IO_SERVICE.
+	 * @param thread Reference to the execution thread.
 	 * @param interval Interval in ms.
 	 */
-    CleanTCPSocketsEvent(TCPTransportInterface* p_transport, asio::io_service& service, const std::thread& thread,
-        double interval);
+    CleanTCPSocketsEvent(
+			TCPTransportInterface* p_transport,
+			asio::io_service& service,
+			const std::thread& thread,
+			double interval);
 	virtual ~CleanTCPSocketsEvent();
 
  	/**

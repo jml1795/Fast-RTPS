@@ -83,7 +83,7 @@ public:
 
     /**
     * Load a dynamic types XML node.
-    * @param dynamic types Node to be loaded.
+    * @param types Node to be loaded.
     * @return XMLP_ret::XML_OK on success, XMLP_ret::XML_ERROR in other case.
     */
     RTPS_DllAPI static XMLP_ret loadXMLDynamicTypes(tinyxml2::XMLElement& types);
@@ -130,7 +130,7 @@ public:
     RTPS_DllAPI static XMLP_ret fillTopicAttributes(const std::string& profile_name, TopicAttributes& atts);
 
     RTPS_DllAPI static void getDefaultTopicAttributes(TopicAttributes& topic_attributes);
-    
+
     RTPS_DllAPI static bool insertDynamicTypeByName(const std::string& sName, p_dynamictypebuilder_t type);
     RTPS_DllAPI static p_dynamictypebuilder_t getDynamicTypeByName(const std::string& sName);
 

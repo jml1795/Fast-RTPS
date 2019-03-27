@@ -376,8 +376,7 @@ public:
     void UnbindSocket(TCPChannelResource*);
 
     /**
-    * Method to get a list of interfaces to bind the socket associated to the given locator.
-    * @param locator Input locator.
+    * Method to get a list of binding interfaces.
     * @return Vector of interfaces in string format.
     */
     virtual std::vector<std::string> get_binding_interfaces_list() = 0;

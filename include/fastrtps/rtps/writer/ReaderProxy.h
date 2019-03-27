@@ -96,7 +96,7 @@ namespace eprosima
 
                 /*!
                  * @brief Sets a change to a particular status (if present in the ReaderProxy)
-                 * @param change change to search and set.
+                 * @param seq_num change to search and set.
                  * @param status Status to apply.
                  */
                 void set_change_to_status(const SequenceNumber_t& seq_num, ChangeForReaderStatus_t status);

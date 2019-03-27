@@ -75,7 +75,7 @@ class RTPSDomain
     /**
      * @brief Create a RTPSParticipant.
      * @snippet fastrtps_example.cpp ex_RTPSParticipantCreation
-     * @param PParam RTPSParticipant Parameters.
+     * @param attrs RTPSParticipant Attributes.
      * @param plisten Pointer to the ParticipantListener.
      * @return Pointer to the RTPSParticipant.
      */

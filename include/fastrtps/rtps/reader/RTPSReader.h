@@ -139,6 +139,7 @@ namespace eprosima
                 /**
                  * Reserve a CacheChange_t.
                  * @param change Pointer to pointer to the Cache.
+                 * @param dataCdrSerializedSize Size of the Cache.
                  * @return True if correctly reserved.
                  */
                 RTPS_DllAPI bool reserveCache(CacheChange_t** change, uint32_t dataCdrSerializedSize);
@@ -150,7 +151,7 @@ namespace eprosima
 
                 /**
                  * Read the next unread CacheChange_t from the history
-                 * @param change POinter to pointer of CacheChange_t
+                 * @param change Pointer to pointer of CacheChange_t
                  * @param wp Pointer to pointer to the WriterProxy
                  * @return True if read.
                  */
@@ -227,11 +228,13 @@ namespace eprosima
 
                 /*!
                 * @brief Set the last notified sequence for a persistence guid
-                * @param guid The persistence guid to update
+                * @param persistence_guid The persistence guid to update
                 * @param seq Sequence number to set for input guid
                 * @remarks Persistent readers will write to DB
                 */
-                virtual void set_last_notified(const GUID_t& peristence_guid, const SequenceNumber_t& seq);
+                virtual void set_last_notified(
+                        const GUID_t& persistence_guid,
+                        const SequenceNumber_t& seq);
 
                 //!ReaderHistory
                 ReaderHistory* mp_history;

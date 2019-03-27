@@ -167,9 +167,12 @@ protected:
     virtual eProsimaUDPSocket OpenAndBindInputSocket(const std::string& sIp, uint16_t port, bool is_multicast) = 0;
     bool OpenAndBindOutputSockets(const Locator_t& locator);
     eProsimaUDPSocket OpenAndBindUnicastOutputSocket(const asio::ip::udp::endpoint& endpoint, uint16_t& port);
-    /** Function to be called from a new thread, which takes cares of performing a blocking receive
-    operation on the ReceiveResource
-    @param input_locator - Locator that triggered the creation of the resource
+
+    /**
+     * Function to be called from a new thread, which takes cares of performing a blocking receive
+     * operation on the ReceiveResource
+     * @param p_channel_resource - Associated ChannelResource
+     * @param input_locator - Locator that triggered the creation of the resource
     */
     void perform_listen_operation(UDPChannelResource* p_channel_resource, Locator_t input_locator);
 
