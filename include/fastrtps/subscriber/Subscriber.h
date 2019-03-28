@@ -33,82 +33,84 @@ class SampleInfo_t;
 
 /**
  * Class Subscriber, contains the public API that allows the user to control the reception of messages.
- * This class should not be instantiated directly. DomainRTPSParticipant class should be used to correctly create this element.
+ * This class should not be instantiated directly.
+ * DomainRTPSParticipant class should be used to correctly create this element.
  * @ingroup FASTRTPS_MODULE
  * @snippet fastrtps_example.cpp ex_Subscriber
  */
 class RTPS_DllAPI Subscriber
 {
-    friend class SubscriberImpl;
+    public:
+        /**
+         * Constructor from a SubscriberImpl pointer
+         * @param pimpl Actual implementation of the subscriber
+         */
+        Subscriber(SubscriberImpl* pimpl) : mp_impl(pimpl) {}
 
-    virtual ~Subscriber() {}
+        /**
+         * Get the associated GUID
+         * @return Associated GUID
+         */
+        const rtps::GUID_t& getGuid();
 
-    SubscriberImpl* mp_impl;
+        /**
+         * Method to block the current thread until an unread message is available
+         */
+        void waitForUnreadMessage();
 
-public:
-    /**
-     * Constructor from a SubscriberImpl pointer
-     * @param pimpl Actual implementation of the subscriber
-     */
-    Subscriber(SubscriberImpl* pimpl) : mp_impl(pimpl) {}
+        /**
+         * Read next unread Data from the Subscriber.
+         * @param data Pointer to the object where you want the data stored.
+         * @param info Pointer to a SampleInfo_t structure that informs you about your sample.
+         * @return True if a sample was read.
+         */
+        bool readNextData(
+                void* data,
+                SampleInfo_t* info);
 
-    /**
-     * Get the associated GUID
-     * @return Associated GUID
-     */
-    const rtps::GUID_t& getGuid();
+        /**
+         * Take next Data from the Subscriber. The data is removed from the subscriber.
+         * @param data Pointer to the object where you want the data stored.
+         * @param info Pointer to a SampleInfo_t structure that informs you about your sample.
+         * @return True if a sample was taken.
+         */
+        bool takeNextData(
+                void* data,
+                SampleInfo_t* info);
 
-    /**
-     * Method to block the current thread until an unread message is available
-     */
-    void waitForUnreadMessage();
+        /**
+         * Update the Attributes of the subscriber;
+         * @param att Reference to a SubscriberAttributes object to update the parameters;
+         * @return True if correctly updated, false if ANY of the updated parameters cannot be updated
+         */
+        bool updateAttributes(const SubscriberAttributes& att);
 
-    /**
-     * Read next unread Data from the Subscriber.
-     * @param data Pointer to the object where you want the data stored.
-     * @param info Pointer to a SampleInfo_t structure that informs you about your sample.
-     * @return True if a sample was read.
-     */
-    bool readNextData(
-            void* data,
-            SampleInfo_t* info);
+        /**
+         * Get the Attributes of the Subscriber.
+         * @return Attributes of the subscriber
+         */
+        const SubscriberAttributes& getAttributes() const;
 
-    /**
-     * Take next Data from the Subscriber. The data is removed from the subscriber.
-     * @param data Pointer to the object where you want the data stored.
-     * @param info Pointer to a SampleInfo_t structure that informs you about your sample.
-     * @return True if a sample was taken.
-     */
-    bool takeNextData(
-            void* data,
-            SampleInfo_t* info);
+        /*!
+        * @brief Returns there is a clean state with all Publishers.
+        * It occurs when the Subscriber received all samples sent by Publishers. In other words,
+        * its WriterProxies are up to date.
+        * @return There is a clean state with all Publishers.
+        */
+        bool isInCleanState() const;
 
-    /**
-     * Update the Attributes of the subscriber;
-     * @param att Reference to a SubscriberAttributes object to update the parameters;
-     * @return True if correctly updated, false if ANY of the updated parameters cannot be updated
-     */
-    bool updateAttributes(const SubscriberAttributes& att);
+        /**
+         * Get the unread count.
+         * @return Unread count
+         */
+        uint64_t getUnreadCount() const;
 
-    /**
-     * Get the Attributes of the Subscriber.
-     * @return Attributes of the subscriber
-     */
-    const SubscriberAttributes& getAttributes() const;
+    private:
+        virtual ~Subscriber() {}
 
-    /*!
-     * @brief Returns there is a clean state with all Publishers.
-     * It occurs when the Subscriber received all samples sent by Publishers. In other words,
-     * its WriterProxies are up to date.
-     * @return There is a clean state with all Publishers.
-     */
-    bool isInCleanState() const;
+        SubscriberImpl* mp_impl;
 
-    /**
-     * Get the unread count.
-     * @return Unread count
-     */
-    uint64_t getUnreadCount() const;
+        friend class SubscriberImpl;
 };
 
 

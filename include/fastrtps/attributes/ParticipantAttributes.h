@@ -33,18 +33,18 @@ namespace fastrtps{
  */
 class ParticipantAttributes
 {
-public:
-	//!Attributes of the associated RTPSParticipant.
-	rtps::RTPSParticipantAttributes rtps;
+    public:
+        //!Attributes of the associated RTPSParticipant.
+        rtps::RTPSParticipantAttributes rtps;
 
-    ParticipantAttributes() {}
+        ParticipantAttributes() {}
 
-    virtual ~ParticipantAttributes() {}
+        virtual ~ParticipantAttributes() {}
 
-    bool operator==(const ParticipantAttributes& b) const
-    {
-        return (this->rtps == b.rtps);
-    }
+        bool operator==(const ParticipantAttributes& b) const
+        {
+            return (this->rtps == b.rtps);
+        }
 };
 
 }

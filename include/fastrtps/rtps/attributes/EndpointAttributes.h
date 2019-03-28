@@ -34,86 +34,87 @@ namespace rtps {
  */
 class EndpointAttributes
 {
-    //!User Defined ID, used for StaticEndpointDiscovery, default value -1.
-    int16_t m_userDefinedID;
+    public:
+        //!Endpoint kind, default value WRITER
+        EndpointKind_t endpointKind;
 
-    //!Entity ID, if the user want to specify the EntityID of the enpoint, default value -1.
-    int16_t m_entityID;
+        //!Topic kind, default value NO_KEY
+        TopicKind_t topicKind;
 
-#if HAVE_SECURITY
-    security::EndpointSecurityAttributes security_attributes_;
-#endif
+        //!Reliability kind, default value BEST_EFFORT
+        ReliabilityKind_t reliabilityKind;
 
-public:
-    //!Endpoint kind, default value WRITER
-    EndpointKind_t endpointKind;
+        //!Durability kind, default value VOLATILE
+        DurabilityKind_t durabilityKind;
 
-    //!Topic kind, default value NO_KEY
-    TopicKind_t topicKind;
+        //!GUID used for persistence
+        GUID_t persistence_guid;
 
-    //!Reliability kind, default value BEST_EFFORT
-    ReliabilityKind_t reliabilityKind;
+        //!Unicast locator list
+        LocatorList_t unicastLocatorList;
 
-    //!Durability kind, default value VOLATILE
-    DurabilityKind_t durabilityKind;
+        //!Multicast locator list
+        LocatorList_t multicastLocatorList;
 
-    //!GUID used for persistence
-    GUID_t persistence_guid;
+        //! Remote locator list.
+        LocatorList_t remoteLocatorList;
 
-    //!Unicast locator list
-    LocatorList_t unicastLocatorList;
+        //!Properties
+        PropertyPolicy properties;
 
-    //!Multicast locator list
-    LocatorList_t multicastLocatorList;
+        EndpointAttributes()
+            : endpointKind(WRITER)
+            , topicKind(NO_KEY)
+            , reliabilityKind(BEST_EFFORT)
+            , durabilityKind(VOLATILE)
+            , persistence_guid()
+            , m_userDefinedID(-1)
+            , m_entityID(-1)
+        {
+        }
 
-    //! Remote locator list.
-    LocatorList_t remoteLocatorList;
+        virtual ~EndpointAttributes(){};
 
-    //!Properties
-    PropertyPolicy properties;
+        /**
+         * Get the user defined ID
+         * @return User defined ID
+         */
+        inline int16_t getUserDefinedID() const { return m_userDefinedID; }
 
-    EndpointAttributes()
-        : m_userDefinedID(-1)
-        , m_entityID(-1)
-        , endpointKind(WRITER)
-        , topicKind(NO_KEY)
-        , reliabilityKind(BEST_EFFORT)
-        , durabilityKind(VOLATILE)
-        , persistence_guid()
-    {
-    }
+        /**
+         * Get the entity defined ID
+         * @return Entity ID
+         */
+        inline int16_t getEntityID() const { return m_entityID; }
 
-    virtual ~EndpointAttributes(){};
+        /**
+         * Set the user defined ID
+         * @param id User defined ID to be set
+         */
+        inline void setUserDefinedID(uint8_t id) { m_userDefinedID = id; }
 
-    /**
-     * Get the user defined ID
-     * @return User defined ID
-     */
-    inline int16_t getUserDefinedID() const { return m_userDefinedID; }
+        /**
+         * Set the entity ID
+         * @param id Entity ID to be set
+         */
+        inline void setEntityID(uint8_t id) { m_entityID = id; }
 
-    /**
-     * Get the entity defined ID
-     * @return Entity ID
-     */
-    inline int16_t getEntityID() const { return m_entityID; }
+    #if HAVE_SECURITY
+        const security::EndpointSecurityAttributes& security_attributes() const { return security_attributes_; }
 
-    /**
-     * Set the user defined ID
-     * @param id User defined ID to be set
-     */
-    inline void setUserDefinedID(uint8_t id) { m_userDefinedID = id; }
+        security::EndpointSecurityAttributes& security_attributes() { return security_attributes_; }
+    #endif
 
-    /**
-     * Set the entity ID
-     * @param id Entity ID to be set
-     */
-    inline void setEntityID(uint8_t id) { m_entityID = id; }
+    private:
+        //!User Defined ID, used for StaticEndpointDiscovery, default value -1.
+        int16_t m_userDefinedID;
 
-#if HAVE_SECURITY
-    const security::EndpointSecurityAttributes& security_attributes() const { return security_attributes_; }
+        //!Entity ID, if the user want to specify the EntityID of the enpoint, default value -1.
+        int16_t m_entityID;
 
-    security::EndpointSecurityAttributes& security_attributes() { return security_attributes_; }
-#endif
+    #if HAVE_SECURITY
+        security::EndpointSecurityAttributes security_attributes_;
+    #endif
 };
 
 } /* namespace rtps */

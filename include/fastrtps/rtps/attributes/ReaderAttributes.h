@@ -34,11 +34,6 @@ namespace rtps{
  */
 struct ReaderTimes
 {
-    //!Initial AckNack delay. Default value ~70ms.
-    Duration_t initialAcknackDelay;
-    //!Delay to be applied when a hearbeat message is received, default value ~5ms.
-    Duration_t heartbeatResponseDelay;
-
     ReaderTimes()
     {
         initialAcknackDelay.fraction = 300*1000*1000;
@@ -52,6 +47,11 @@ struct ReaderTimes
         return (this->initialAcknackDelay == b.initialAcknackDelay)  &&
                (this->heartbeatResponseDelay == b.heartbeatResponseDelay);
     }
+
+    //!Initial AckNack delay. Default value ~70ms.
+    Duration_t initialAcknackDelay;
+    //!Delay to be applied when a hearbeat message is received, default value ~5ms.
+    Duration_t heartbeatResponseDelay;
 };
 
 /**
@@ -60,6 +60,15 @@ struct ReaderTimes
  */
 struct  ReaderAttributes
 {
+    ReaderAttributes() : expectsInlineQos(false)
+    {
+        endpoint.endpointKind = READER;
+        endpoint.durabilityKind = VOLATILE;
+        endpoint.reliabilityKind = BEST_EFFORT;
+    };
+
+    virtual ~ReaderAttributes() {};
+
     //!Attributes of the associated endpoint.
     EndpointAttributes endpoint;
 
@@ -68,15 +77,6 @@ struct  ReaderAttributes
 
     //!Indicates if the reader expects Inline qos, default value 0.
     bool expectsInlineQos;
-
-    ReaderAttributes() : expectsInlineQos(false)
-    {
-        endpoint.endpointKind = READER;
-        endpoint.durabilityKind = VOLATILE;
-        endpoint.reliabilityKind = BEST_EFFORT;
-    };
-
-    virtual ~ReaderAttributes(){};
 };
 
 /**
@@ -85,20 +85,6 @@ struct  ReaderAttributes
  */
 struct  RemoteWriterAttributes
 {
-    //!Attributes of the associated endpoint.
-    EndpointAttributes endpoint;
-
-    //!GUID_t of the writer, can be unknown if the reader is best effort.
-    GUID_t guid;
-
-    //!Liveliness lease duration, default value c_TimeInfinite.
-    Duration_t livelinessLeaseDuration;
-
-    //!Ownership Strength of the associated writer.
-    uint16_t ownershipStrength;
-
-    bool is_eprosima_endpoint;
-
     RemoteWriterAttributes()
         : livelinessLeaseDuration(c_TimeInfinite)
         , ownershipStrength(0)
@@ -115,10 +101,21 @@ struct  RemoteWriterAttributes
         endpoint.endpointKind = WRITER;
     }
 
-    virtual ~RemoteWriterAttributes()
-    {
+    virtual ~RemoteWriterAttributes() {}
 
-    }
+    //!Attributes of the associated endpoint.
+    EndpointAttributes endpoint;
+
+    //!GUID_t of the writer, can be unknown if the reader is best effort.
+    GUID_t guid;
+
+    //!Liveliness lease duration, default value c_TimeInfinite.
+    Duration_t livelinessLeaseDuration;
+
+    //!Ownership Strength of the associated writer.
+    uint16_t ownershipStrength;
+
+    bool is_eprosima_endpoint;
 };
 }
 }

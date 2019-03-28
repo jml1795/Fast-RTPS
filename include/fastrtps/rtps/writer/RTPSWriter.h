@@ -43,75 +43,6 @@ struct CacheChange_t;
  */
 class RTPSWriter : public Endpoint
 {
-    friend class WriterHistory;
-    friend class RTPSParticipantImpl;
-    friend class RTPSMessageGroup;
-
-    RTPSWriter& operator=(const RTPSWriter&) = delete;
-
-protected:
-    RTPSWriter(
-            RTPSParticipantImpl*,
-            GUID_t& guid,
-            WriterAttributes& att,
-            WriterHistory* hist,
-            WriterListener* listen=nullptr);
-
-    virtual ~RTPSWriter();
-
-    void update_cached_info_nts(
-            std::vector<GUID_t>&& allRemoteReaders,
-            std::vector<LocatorList_t>& allLocatorLists);
-
-    /**
-     * Initialize the header of hte CDRMessages.
-     */
-    void init_header();
-
-    /**
-     * Add a change to the unsent list.
-     * @param change Pointer to the change to add.
-     */
-    virtual void unsent_change_added_to_history(CacheChange_t* change) = 0;
-
-    /**
-     * Indicate the writer that a change has been removed by the history due to some HistoryQos requirement.
-     * @param a_change Pointer to the change that is going to be removed.
-     * @return True if removed correctly.
-     */
-    virtual bool change_removed_by_history(CacheChange_t* a_change) = 0;
-
-    //!Is the data sent directly or announced by HB and THEN send to the ones who ask for it?.
-    bool m_pushMode;
-
-    //!Group created to send messages more efficiently
-    RTPSMessageGroup_t m_cdrmessages;
-
-    //!INdicates if the liveliness has been asserted
-    bool m_livelinessAsserted;
-
-    //!WriterHistory
-    WriterHistory* mp_history;
-
-    //!Listener
-    WriterListener* mp_listener;
-
-    //!Asynchronous publication activated
-    bool is_async_;
-
-    //!Separate sending activated
-    bool m_separateSendingEnabled;
-
-    LocatorList_t mAllShrinkedLocatorList;
-
-    std::vector<GUID_t> mAllRemoteReaders;
-
-#if HAVE_SECURITY
-    SerializedPayload_t encrypt_payload_;
-
-    bool encrypt_cachechange(CacheChange_t* change);
-#endif
-
 public:
     /**
      * Create a new change based with the provided changeKind.
@@ -281,6 +212,78 @@ public:
      * @return true if separate sending is enabled
      */
     bool get_separate_sending () const { return m_separateSendingEnabled; }
+
+protected:
+    RTPSWriter(
+            RTPSParticipantImpl*,
+            GUID_t& guid,
+            WriterAttributes& att,
+            WriterHistory* hist,
+            WriterListener* listen=nullptr);
+
+    virtual ~RTPSWriter();
+
+    void update_cached_info_nts(
+            std::vector<GUID_t>&& allRemoteReaders,
+            std::vector<LocatorList_t>& allLocatorLists);
+
+    /**
+     * Initialize the header of hte CDRMessages.
+     */
+    void init_header();
+
+    /**
+     * Add a change to the unsent list.
+     * @param change Pointer to the change to add.
+     */
+    virtual void unsent_change_added_to_history(CacheChange_t* change) = 0;
+
+    /**
+     * Indicate the writer that a change has been removed by the history due to some HistoryQos requirement.
+     * @param a_change Pointer to the change that is going to be removed.
+     * @return True if removed correctly.
+     */
+    virtual bool change_removed_by_history(CacheChange_t* a_change) = 0;
+
+    //!Is the data sent directly or announced by HB and THEN send to the ones who ask for it?.
+    bool m_pushMode;
+
+    //!Group created to send messages more efficiently
+    RTPSMessageGroup_t m_cdrmessages;
+
+    //!INdicates if the liveliness has been asserted
+    bool m_livelinessAsserted;
+
+    //!WriterHistory
+    WriterHistory* mp_history;
+
+    //!Listener
+    WriterListener* mp_listener;
+
+    //!Asynchronous publication activated
+    bool is_async_;
+
+    //!Separate sending activated
+    bool m_separateSendingEnabled;
+
+    LocatorList_t mAllShrinkedLocatorList;
+
+    std::vector<GUID_t> mAllRemoteReaders;
+
+#if HAVE_SECURITY
+    SerializedPayload_t encrypt_payload_;
+
+    bool encrypt_cachechange(CacheChange_t* change);
+#endif
+
+private:
+    RTPSWriter& operator=(const RTPSWriter&) = delete;
+
+    friend class WriterHistory;
+
+    friend class RTPSParticipantImpl;
+
+    friend class RTPSMessageGroup;
 };
 
 }

@@ -59,127 +59,127 @@ class LogConsumer;
  */
 class Log
 {
-    static void LaunchThread();
+    public:
+        /**
+        * Types of log entry.
+        * * Error: Maximum priority. Can only be disabled statically through LOG_NO_ERROR.
+        * * Warning: Medium priority.  Can be disabled statically and dynamically.
+        * * Info: Low priority. Useful for debugging. Disabled by default on release branches.
+        */
+        enum Kind
+        {
+            Error,
+            Warning,
+            Info,
+        };
 
-    static void Run();
+        /**
+        * Registers an user defined consumer to route log output.
+        * There is a default stdout consumer active as default.
+        * @param consumer r-value to a consumer unique_ptr. It will be invalidated after the call.
+        */
+        RTPS_DllAPI static void RegisterConsumer(std::unique_ptr<LogConsumer>&& consumer);
 
-    static void GetTimestamp(std::string&);
+        //! Removes all registered consumers, including the default stdout.
+        RTPS_DllAPI static void ClearConsumers();
 
-public:
-    /**
-    * Types of log entry.
-    * * Error: Maximum priority. Can only be disabled statically through LOG_NO_ERROR.
-    * * Warning: Medium priority.  Can be disabled statically and dynamically.
-    * * Info: Low priority. Useful for debugging. Disabled by default on release branches.
-    */
-    enum Kind
-    {
-        Error,
-        Warning,
-        Info,
-    };
+        //! Enables the reporting of filenames in log entries. Disabled by default.
+        RTPS_DllAPI static void ReportFilenames(bool);
 
-    /**
-    * Registers an user defined consumer to route log output.
-    * There is a default stdout consumer active as default.
-    * @param consumer r-value to a consumer unique_ptr. It will be invalidated after the call.
-    */
-    RTPS_DllAPI static void RegisterConsumer(std::unique_ptr<LogConsumer>&& consumer);
+        //! Enables the reporting of function names in log entries. Enabled by default when supported.
+        RTPS_DllAPI static void ReportFunctions(bool);
 
-    //! Removes all registered consumers, including the default stdout.
-    RTPS_DllAPI static void ClearConsumers();
+        //! Sets the verbosity level, allowing for messages equal or under that priority to be logged.
+        RTPS_DllAPI static void SetVerbosity(Log::Kind);
 
-    //! Enables the reporting of filenames in log entries. Disabled by default.
-    RTPS_DllAPI static void ReportFilenames(bool);
+        //! Returns the current verbosity level.
+        RTPS_DllAPI static Log::Kind GetVerbosity();
 
-    //! Enables the reporting of function names in log entries. Enabled by default when supported.
-    RTPS_DllAPI static void ReportFunctions(bool);
+        //! Sets a filter that will pattern-match against log categories, dropping any unmatched categories.
+        RTPS_DllAPI static void SetCategoryFilter(const std::regex&);
 
-    //! Sets the verbosity level, allowing for messages equal or under that priority to be logged.
-    RTPS_DllAPI static void SetVerbosity(Log::Kind);
+        //! Sets a filter that will pattern-match against filenames, dropping any unmatched categories.
+        RTPS_DllAPI static void SetFilenameFilter(const std::regex&);
 
-    //! Returns the current verbosity level.
-    RTPS_DllAPI static Log::Kind GetVerbosity();
+        //! Sets a filter that will pattern-match against the provided error string, dropping any unmatched categories.
+        RTPS_DllAPI static void SetErrorStringFilter(const std::regex&);
 
-    //! Sets a filter that will pattern-match against log categories, dropping any unmatched categories.
-    RTPS_DllAPI static void SetCategoryFilter(const std::regex&);
+        //! Returns the logging engine to configuration defaults.
+        RTPS_DllAPI static void Reset();
 
-    //! Sets a filter that will pattern-match against filenames, dropping any unmatched categories.
-    RTPS_DllAPI static void SetFilenameFilter(const std::regex&);
+        //! Stops the logging thread. It will re-launch on the next call to a successful log macro.
+        RTPS_DllAPI static void KillThread();
 
-    //! Sets a filter that will pattern-match against the provided error string, dropping any unmatched categories.
-    RTPS_DllAPI static void SetErrorStringFilter(const std::regex&);
+        // Note: In VS2013, if you're linking this class statically, you will have to call KillThread before leaving
+        // main, due to an unsolved MSVC bug.
 
-    //! Returns the logging engine to configuration defaults.
-    RTPS_DllAPI static void Reset();
+        struct Context
+        {
+            const char* filename;
+            int line;
+            const char* function;
+            const char* category;
+        };
 
-    //! Stops the logging thread. It will re-launch on the next call to a successful log macro.
-    RTPS_DllAPI static void KillThread();
+        struct Entry
+        {
+            std::string message;
+            Log::Context context;
+            Log::Kind kind;
+            std::string timestamp;
+        };
 
-    // Note: In VS2013, if you're linking this class statically, you will have to call KillThread before leaving
-    // main, due to an unsolved MSVC bug.
+        /**
+        * Not recommended to call this method directly! Use the following macros:
+        *  * logInfo(cat, msg);
+        *  * logWarning(cat, msg);
+        *  * logError(cat, msg);
+        */
+        RTPS_DllAPI static void QueueLog(
+                const std::string& message,
+                const Log::Context&,
+                Log::Kind);
 
-    struct Context
-    {
-        const char* filename;
-        int line;
-        const char* function;
-        const char* category;
-    };
+    private:
+        struct Resources
+        {
+            DBQueue<Entry> mLogs;
+            std::vector<std::unique_ptr<LogConsumer>> mConsumers;
+            std::unique_ptr<std::thread> mLoggingThread;
 
-    struct Entry
-    {
-        std::string message;
-        Log::Context context;
-        Log::Kind kind;
-        std::string timestamp;
-    };
+            // Condition variable segment.
+            std::condition_variable mCv;
+            std::mutex mCvMutex;
+            bool mLogging;
+            bool mWork;
 
-    /**
-    * Not recommended to call this method directly! Use the following macros:
-    *  * logInfo(cat, msg);
-    *  * logWarning(cat, msg);
-    *  * logError(cat, msg);
-    */
-    RTPS_DllAPI static void QueueLog(
-            const std::string& message,
-            const Log::Context&,
-            Log::Kind);
+            // Context configuration.
+            std::mutex mConfigMutex;
+            bool mFilenames;
+            bool mFunctions;
+            std::unique_ptr<std::regex> mCategoryFilter;
+            std::unique_ptr<std::regex> mFilenameFilter;
+            std::unique_ptr<std::regex> mErrorStringFilter;
 
-private: // Here for declaration order of inner structures.
-    struct Resources
-    {
-        DBQueue<Entry> mLogs;
-        std::vector<std::unique_ptr<LogConsumer>> mConsumers;
-        std::unique_ptr<std::thread> mLoggingThread;
+            std::atomic<Log::Kind> mVerbosity;
 
-        // Condition variable segment.
-        std::condition_variable mCv;
-        std::mutex mCvMutex;
-        bool mLogging;
-        bool mWork;
+            Resources();
 
-        // Context configuration.
-        std::mutex mConfigMutex;
-        bool mFilenames;
-        bool mFunctions;
-        std::unique_ptr<std::regex> mCategoryFilter;
-        std::unique_ptr<std::regex> mFilenameFilter;
-        std::unique_ptr<std::regex> mErrorStringFilter;
+            ~Resources();
+        };
 
-        std::atomic<Log::Kind> mVerbosity;
+        static struct Resources mResources;
 
-        Resources();
+        // Applies transformations to the entries compliant with the options selected (such as
+        // erasure of certain context information, or filtering by category. Returns false
+        // if the log entry is blacklisted.
+        static bool Preprocess(Entry&);
 
-        ~Resources();
-    };
+        static void LaunchThread();
 
-    static struct Resources mResources;
+        static void Run();
 
-    // Applies transformations to the entries compliant with the options selected (such as
-    // erasure of certain context information, or filtering by category. Returns false
-    // if the log entry is blacklisted.
-    static bool Preprocess(Entry&);
+        static void GetTimestamp(std::string&);
 };
 
 /**
@@ -187,35 +187,35 @@ private: // Here for declaration order of inner structures.
  */
 class LogConsumer
 {
-protected:
-    void PrintTimestamp(
-            std::ostream& stream,
-            const Log::Entry&,
-            bool color) const;
+    public:
+        virtual ~LogConsumer(){};
 
-    void PrintHeader(
-            std::ostream& stream,
-            const Log::Entry&,
-            bool color) const;
+        virtual void Consume(const Log::Entry&) = 0;
 
-    void PrintContext(
-            std::ostream& stream,
-            const Log::Entry&,
-            bool color) const;
+    protected:
+        void PrintTimestamp(
+                std::ostream& stream,
+                const Log::Entry&,
+                bool color) const;
 
-    void PrintMessage(
-            std::ostream& stream,
-            const Log::Entry&,
-            bool color) const;
+        void PrintHeader(
+                std::ostream& stream,
+                const Log::Entry&,
+                bool color) const;
 
-    void PrintNewLine(
-            std::ostream& stream,
-            bool color) const;
+        void PrintContext(
+                std::ostream& stream,
+                const Log::Entry&,
+                bool color) const;
 
-public:
-    virtual ~LogConsumer(){};
+        void PrintMessage(
+                std::ostream& stream,
+                const Log::Entry&,
+                bool color) const;
 
-    virtual void Consume(const Log::Entry&) = 0;
+        void PrintNewLine(
+                std::ostream& stream,
+                bool color) const;
 };
 
 #if defined(WIN32)

@@ -31,8 +31,8 @@ namespace fastrtps {
 
 namespace rtps
 {
-struct GUID_t;
-class WriteParams;
+    struct GUID_t;
+    class WriteParams;
 }
 
 
@@ -45,93 +45,94 @@ class PublisherImpl;
  */
 class RTPS_DllAPI Publisher
 {
-    friend class PublisherImpl;
+    public:
+        /**
+         * Constructor from a PublisherImpl pointer
+         * @param pimpl Actual implementation of the publisher
+         */
+        Publisher(PublisherImpl* pimpl);
 
-    virtual ~Publisher();
+        /**
+         * Write data to the topic.
+         * @param Data Pointer to the data
+         * @return True if correct
+         * @par Calling example:
+         * @snippet fastrtps_example.cpp ex_PublisherWrite
+         */
+        bool write(void*Data);
 
-    PublisherImpl* mp_impl;
+        /**
+         * Write data with params to the topic.
+         * @param Data Pointer to the data
+         * @param wparams Extra write parameters.
+         * @return True if correct
+         * @par Calling example:
+         * @snippet fastrtps_example.cpp ex_PublisherWrite
+         */
+        bool write(
+                void*Data,
+                rtps::WriteParams &wparams);
 
-public:
-    /**
-     * Constructor from a PublisherImpl pointer
-     * @param pimpl Actual implementation of the publisher
-     */
-    Publisher(PublisherImpl* pimpl);
+        /**
+         * Dispose of a previously written data.
+         * @param Data Pointer to the data.
+         * @return True if correct.
+         */
+        bool dispose(void*Data);
 
-    /**
-     * Write data to the topic.
-     * @param Data Pointer to the data
-     * @return True if correct
-     * @par Calling example:
-     * @snippet fastrtps_example.cpp ex_PublisherWrite
-     */
-    bool write(void*Data);
+        /**
+         * Unregister a previously written data.
+         * @param Data Pointer to the data.
+         * @return True if correct.
+         */
+        bool unregister(void*Data);
 
-    /**
-     * Write data with params to the topic.
-     * @param Data Pointer to the data
-     * @param wparams Extra write parameters.
-     * @return True if correct
-     * @par Calling example:
-     * @snippet fastrtps_example.cpp ex_PublisherWrite
-     */
-    bool write(
-            void*Data,
-            rtps::WriteParams &wparams);
+        /**
+         * Dispose and unregister a previously written data.
+         * @param Data Pointer to the data.
+         * @return True if correct.
+         */
+        bool dispose_and_unregister(void*Data);
 
-    /**
-     * Dispose of a previously written data.
-     * @param Data Pointer to the data.
-     * @return True if correct.
-     */
-    bool dispose(void*Data);
+        /**
+         * Remove all the Changes in the associated RTPSWriter.
+         * @param[out] removed Number of elements removed
+         * @return True if all elements were removed.
+         */
+        bool removeAllChange(size_t* removed = nullptr);
 
-    /**
-     * Unregister a previously written data.
-     * @param Data Pointer to the data.
-     * @return True if correct.
-     */
-    bool unregister(void*Data);
+        /**
+        * Waits until all changes were acknowledged or max_wait.
+        * @param max_wait Maximum time to wait until all changes are acknowledged.
+        * @return True if all were acknowledged.
+        */
+        bool wait_for_all_acked(const rtps::Time_t& max_wait);
 
-    /**
-     * Dispose and unregister a previously written data.
-     * @param Data Pointer to the data.
-     * @return True if correct.
-     */
-    bool dispose_and_unregister(void*Data);
+        /**
+         * Get the GUID_t of the associated RTPSWriter.
+         * @return GUID_t.
+         */
+        const rtps::GUID_t& getGuid();
 
-    /**
-     * Remove all the Changes in the associated RTPSWriter.
-     * @param[out] removed Number of elements removed
-     * @return True if all elements were removed.
-     */
-    bool removeAllChange(size_t* removed = nullptr);
+        /**
+         * Get the Attributes of the Publisher.
+         * @return Attributes of the publisher
+         */
+        const PublisherAttributes& getAttributes() const;
 
-    /**
-    * Waits until all changes were acknowledged or max_wait.
-    * @param max_wait Maximum time to wait until all changes are acknowledged.
-    * @return True if all were acknowledged.
-    */
-    bool wait_for_all_acked(const rtps::Time_t& max_wait);
+        /**
+         * Update the Attributes of the publisher.
+         * @param att Reference to a PublisherAttributes object to update the parameters.
+         * @return True if correctly updated, false if ANY of the updated parameters cannot be updated.
+         */
+        bool updateAttributes(const PublisherAttributes& att);
 
-    /**
-     * Get the GUID_t of the associated RTPSWriter.
-     * @return GUID_t.
-     */
-    const rtps::GUID_t& getGuid();
+    private:
+        friend class PublisherImpl;
 
-    /**
-     * Get the Attributes of the Publisher.
-     * @return Attributes of the publisher
-     */
-    const PublisherAttributes& getAttributes() const;
+        virtual ~Publisher();
 
-    /**
-     * Update the Attributes of the publisher.
-     * @param att Reference to a PublisherAttributes object to update the parameters.
-     * @return True if correctly updated, false if ANY of the updated parameters cannot be updated.
-     */
-    bool updateAttributes(const PublisherAttributes& att);
+        PublisherImpl* mp_impl;
 };
 
 } /* namespace fastrtps */

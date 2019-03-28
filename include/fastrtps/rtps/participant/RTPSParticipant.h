@@ -49,152 +49,155 @@ class ReaderProxyData;
  */
 class RTPS_DllAPI RTPSParticipant
 {
-friend class RTPSParticipantImpl;
-friend class RTPSDomain;
-    /**
-     * Constructor. Requires a pointer to the implementation.
-     * @param pimpl Implementation.
-     */
-    RTPSParticipant(RTPSParticipantImpl* pimpl);
+    public:
+        //!Get the GUID_t of the RTPSParticipant.
+        const GUID_t& getGuid() const ;
 
-    virtual ~ RTPSParticipant();
+        //!Force the announcement of the RTPSParticipant state.
+        void announceRTPSParticipantState();
 
-    //!Pointer to the implementation.
-    RTPSParticipantImpl* mp_impl;
+        //	//!Method to loose the next change (ONLY FOR TEST). //TODO remove this method because is only for testing
+        //	void loose_next_change();
 
-public:
-    //!Get the GUID_t of the RTPSParticipant.
-    const GUID_t& getGuid() const ;
+        //!Stop the RTPSParticipant announcement period. //TODO remove this method because is only for testing
+        void stopRTPSParticipantAnnouncement();
 
-    //!Force the announcement of the RTPSParticipant state.
-    void announceRTPSParticipantState();
+        //!Reset the RTPSParticipant announcement period. //TODO remove this method because is only for testing
+        void resetRTPSParticipantAnnouncement();
 
-    //	//!Method to loose the next change (ONLY FOR TEST). //TODO remove this method because is only for testing
-    //	void loose_next_change();
+        /**
+         * Indicate the Participant that you have discovered a new Remote Writer.
+         * This method can be used by the user to implements its own Static Endpoint
+         * Discovery Protocol
+         * @param pguid GUID_t of the discovered Writer.
+         * @param userDefinedId ID of the discovered Writer.
+         * @return True if correctly added.
+         */
 
-    //!Stop the RTPSParticipant announcement period. //TODO remove this method because is only for testing
-    void stopRTPSParticipantAnnouncement();
+        bool newRemoteWriterDiscovered(
+                const GUID_t& pguid,
+                int16_t userDefinedId);
+        /**
+         * Indicate the Participant that you have discovered a new Remote Reader.
+         * This method can be used by the user to implements its own Static Endpoint
+         * Discovery Protocol
+         * @param pguid GUID_t of the discovered Reader.
+         * @param userDefinedId ID of the discovered Reader.
+         * @return True if correctly added.
+         */
+        bool newRemoteReaderDiscovered(
+                const GUID_t& pguid,
+                int16_t userDefinedId);
 
-    //!Reset the RTPSParticipant announcement period. //TODO remove this method because is only for testing
-    void resetRTPSParticipantAnnouncement();
+        /**
+         * Get the Participant ID.
+         * @return Participant ID.
+         */
+        uint32_t getRTPSParticipantID() const;
 
-    /**
-     * Indicate the Participant that you have discovered a new Remote Writer.
-     * This method can be used by the user to implements its own Static Endpoint
-     * Discovery Protocol
-     * @param pguid GUID_t of the discovered Writer.
-     * @param userDefinedId ID of the discovered Writer.
-     * @return True if correctly added.
-     */
+        /**
+         * Register a RTPSWriter in the builtin Protocols.
+         * @param Writer Pointer to the RTPSWriter.
+         * @param topicAtt Topic Attributes where you want to register it.
+         * @param wqos WriterQos.
+         * @return True if correctly registered.
+         */
+        bool registerWriter(
+                RTPSWriter* Writer,
+                const TopicAttributes& topicAtt,
+                const WriterQos& wqos);
 
-    bool newRemoteWriterDiscovered(
-            const GUID_t& pguid,
-            int16_t userDefinedId);
-    /**
-     * Indicate the Participant that you have discovered a new Remote Reader.
-     * This method can be used by the user to implements its own Static Endpoint
-     * Discovery Protocol
-     * @param pguid GUID_t of the discovered Reader.
-     * @param userDefinedId ID of the discovered Reader.
-     * @return True if correctly added.
-     */
-    bool newRemoteReaderDiscovered(
-            const GUID_t& pguid,
-            int16_t userDefinedId);
+        /**
+         * Register a RTPSReader in the builtin Protocols.
+         * @param Reader Pointer to the RTPSReader.
+         * @param topicAtt Topic Attributes where you want to register it.
+         * @param rqos ReaderQos.
+         * @return True if correctly registered.
+         */
+        bool registerReader(
+                RTPSReader* Reader,
+                const TopicAttributes& topicAtt,
+                const ReaderQos& rqos);
 
-    /**
-     * Get the Participant ID.
-     * @return Participant ID.
-     */
-    uint32_t getRTPSParticipantID() const;
+        /**
+         * Update writer QOS
+         * @param Writer to update
+         * @param topicAtt Topic Attributes where you want to register it.
+         * @param wqos New writer QoS
+         * @return true on success
+         */
+        bool updateWriter(
+                RTPSWriter* Writer,
+                const TopicAttributes& topicAtt,
+                const WriterQos& wqos);
 
-    /**
-     * Register a RTPSWriter in the builtin Protocols.
-     * @param Writer Pointer to the RTPSWriter.
-     * @param topicAtt Topic Attributes where you want to register it.
-     * @param wqos WriterQos.
-     * @return True if correctly registered.
-     */
-    bool registerWriter(
-            RTPSWriter* Writer,
-            const TopicAttributes& topicAtt,
-            const WriterQos& wqos);
+        /**
+         * Update reader QOS
+         * @param Reader to update
+         * @param topicAtt Topic Attributes where you want to register it.
+         * @param rqos New reader QoS
+         * @return true on success
+         */
+        bool updateReader(
+                RTPSReader* Reader,
+                const TopicAttributes& topicAtt,
+                const ReaderQos& rqos);
 
-    /**
-     * Register a RTPSReader in the builtin Protocols.
-     * @param Reader Pointer to the RTPSReader.
-     * @param topicAtt Topic Attributes where you want to register it.
-     * @param rqos ReaderQos.
-     * @return True if correctly registered.
-     */
-    bool registerReader(
-            RTPSReader* Reader,
-            const TopicAttributes& topicAtt,
-            const ReaderQos& rqos);
+        /**
+         * Returns a list with the participant names.
+         * @return list of participant names.
+         */
+        std::vector<std::string> getParticipantNames() const;
 
-    /**
-     * Update writer QOS
-     * @param Writer to update
-     * @param topicAtt Topic Attributes where you want to register it.
-     * @param wqos New writer QoS
-     * @return true on success
-     */
-    bool updateWriter(
-            RTPSWriter* Writer,
-            const TopicAttributes& topicAtt,
-            const WriterQos& wqos);
+        /**
+         * Get a copy of the actual state of the RTPSParticipantParameters
+         * @return RTPSParticipantAttributes copy of the params.
+         */
+        const RTPSParticipantAttributes & getRTPSParticipantAttributes() const;
 
-    /**
-     * Update reader QOS
-     * @param Reader to update
-     * @param topicAtt Topic Attributes where you want to register it.
-     * @param rqos New reader QoS
-     * @return true on success
-     */
-    bool updateReader(
-            RTPSReader* Reader,
-            const TopicAttributes& topicAtt,
-            const ReaderQos& rqos);
+        /**
+         * Retrieves the maximum message size.
+         */
+        uint32_t getMaxMessageSize() const;
 
-    /**
-     * Returns a list with the participant names.
-     * @return list of participant names.
-     */
-    std::vector<std::string> getParticipantNames() const;
+        /**
+         * Retrieves the maximum data size.
+         */
+        uint32_t getMaxDataSize() const;
 
-    /**
-     * Get a copy of the actual state of the RTPSParticipantParameters
-     * @return RTPSParticipantAttributes copy of the params.
-     */
-    const RTPSParticipantAttributes & getRTPSParticipantAttributes() const;
+        /**
+         * Retrieves remote write information.
+         * @param writerGuid GUID of the writer.
+         * @param returnedInfo WriterProxyData to be filled.
+         */
+        bool get_remote_writer_info(
+                const GUID_t& writerGuid,
+                WriterProxyData& returnedInfo);
 
-    /**
-     * Retrieves the maximum message size.
-     */
-    uint32_t getMaxMessageSize() const;
+        /**
+         * Retrieves remote reader information.
+         * @param readerGuid GUID of the reader.
+         * @param returnedInfo ReaderProxyData to be filled.
+         */
+        bool get_remote_reader_info(
+                const GUID_t& readerGuid,
+                ReaderProxyData& returnedInfo);
 
-    /**
-     * Retrieves the maximum data size.
-     */
-    uint32_t getMaxDataSize() const;
+    private:
+        /**
+         * Constructor. Requires a pointer to the implementation.
+         * @param pimpl Implementation.
+         */
+        RTPSParticipant(RTPSParticipantImpl* pimpl);
 
-    /**
-     * Retrieves remote write information.
-     * @param writerGuid GUID of the writer.
-     * @param returnedInfo WriterProxyData to be filled.
-     */
-    bool get_remote_writer_info(
-            const GUID_t& writerGuid,
-            WriterProxyData& returnedInfo);
+        virtual ~ RTPSParticipant();
 
-    /**
-     * Retrieves remote reader information.
-     * @param readerGuid GUID of the reader.
-     * @param returnedInfo ReaderProxyData to be filled.
-     */
-    bool get_remote_reader_info(
-            const GUID_t& readerGuid,
-            ReaderProxyData& returnedInfo);
+        //!Pointer to the implementation.
+        RTPSParticipantImpl* mp_impl;
+
+        friend class RTPSParticipantImpl;
+
+        friend class RTPSDomain;
 };
 
 }

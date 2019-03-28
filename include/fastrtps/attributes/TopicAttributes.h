@@ -34,113 +34,113 @@ namespace fastrtps{
  */
 class TopicAttributes
 {
-public:
-    //! TopicKind_t, default value NO_KEY.
-    rtps::TopicKind_t topicKind;
+    public:
+        //! TopicKind_t, default value NO_KEY.
+        rtps::TopicKind_t topicKind;
 
-    //! Topic discovery kind, default value NO_CHECK.
-    rtps::TopicDiscoveryKind_t topicDiscoveryKind;
+        //! Topic discovery kind, default value NO_CHECK.
+        rtps::TopicDiscoveryKind_t topicDiscoveryKind;
 
-    //! Topic Name.
-    std::string topicName;
+        //! Topic Name.
+        std::string topicName;
 
-    //!Topic Data Type.
-    std::string topicDataType;
+        //!Topic Data Type.
+        std::string topicDataType;
 
-    //!QOS Regarding the History to be saved.
-    HistoryQosPolicy historyQos;
+        //!QOS Regarding the History to be saved.
+        HistoryQosPolicy historyQos;
 
-    //!QOS Regarding the resources to allocate.
-    ResourceLimitsQosPolicy resourceLimitsQos;
+        //!QOS Regarding the resources to allocate.
+        ResourceLimitsQosPolicy resourceLimitsQos;
 
-    //!QOS Regarding the format of the data.
-    DataRepresentationQosPolicy dataRepresentationQos;
+        //!QOS Regarding the format of the data.
+        DataRepresentationQosPolicy dataRepresentationQos;
 
-    //!QOS Regarding the consistency data to check.
-    TypeConsistencyEnforcementQosPolicy typeConsistencyQos;
+        //!QOS Regarding the consistency data to check.
+        TypeConsistencyEnforcementQosPolicy typeConsistencyQos;
 
-    //!Type Identifier
-    TypeIdV1 type_id;
+        //!Type Identifier
+        TypeIdV1 type_id;
 
-    //!Type Object
-    TypeObjectV1 type;
+        //!Type Object
+        TypeObjectV1 type;
 
-    /**
-     * Default constructor
-     */
-    TopicAttributes()
-        : topicKind(rtps::NO_KEY)
-        , topicName("UNDEF")
-        , topicDataType("UNDEF")
-    {
-        topicDiscoveryKind = rtps::TopicDiscoveryKind_t::NO_CHECK;
-    }
+        /**
+         * Default constructor
+         */
+        TopicAttributes()
+            : topicKind(rtps::NO_KEY)
+            , topicName("UNDEF")
+            , topicDataType("UNDEF")
+        {
+            topicDiscoveryKind = rtps::TopicDiscoveryKind_t::NO_CHECK;
+        }
 
-    //!Constructor, you need to provide the topic name and the topic data type.
-    TopicAttributes(
-            const char* name,
-            const char* dataType,
-            rtps::TopicKind_t tKind= rtps::NO_KEY,
-            rtps::TopicDiscoveryKind_t tDiscovery = rtps::NO_CHECK)
-    {
-        topicKind = tKind;
-        topicDiscoveryKind = tDiscovery;
-        topicName = std::string(name);
-        topicDataType = std::string(dataType);
-    }
+        //!Constructor, you need to provide the topic name and the topic data type.
+        TopicAttributes(
+                const char* name,
+                const char* dataType,
+                rtps::TopicKind_t tKind= rtps::NO_KEY,
+                rtps::TopicDiscoveryKind_t tDiscovery = rtps::NO_CHECK)
+        {
+            topicKind = tKind;
+            topicDiscoveryKind = tDiscovery;
+            topicName = std::string(name);
+            topicDataType = std::string(dataType);
+        }
 
-    virtual ~TopicAttributes() {}
+        virtual ~TopicAttributes() {}
 
-    bool operator==(const TopicAttributes& b) const
-    {
-        return (this->topicKind == b.topicKind) &&
-                (this->topicName == b.topicName) &&
-                (this->topicDataType == b.topicDataType) &&
-                (this->historyQos == b.historyQos);
-    }
+        bool operator==(const TopicAttributes& b) const
+        {
+            return (this->topicKind == b.topicKind) &&
+                    (this->topicName == b.topicName) &&
+                    (this->topicDataType == b.topicDataType) &&
+                    (this->historyQos == b.historyQos);
+        }
 
-    /**
-    * Get the topic data type
-    * @return Topic data type
-    */
-    const std::string& getTopicDataType() const
-    {
-        return topicDataType;
-    }
+        /**
+        * Get the topic data type
+        * @return Topic data type
+        */
+        const std::string& getTopicDataType() const
+        {
+            return topicDataType;
+        }
 
-    /**
-    * Get the topic kind
-    * @return Topic kind
-    */
-    rtps::TopicKind_t getTopicKind() const
-    {
-        return topicKind;
-    }
+        /**
+        * Get the topic kind
+        * @return Topic kind
+        */
+        rtps::TopicKind_t getTopicKind() const
+        {
+            return topicKind;
+        }
 
-    /**
-    * Get the Topic discoreryKind
-    * @return Topic discoreryKind
-    */
-    rtps::TopicDiscoveryKind_t getTopicDiscoveryKind() const
-    {
-        return topicDiscoveryKind;
-    }
+        /**
+        * Get the Topic discoreryKind
+        * @return Topic discoreryKind
+        */
+        rtps::TopicDiscoveryKind_t getTopicDiscoveryKind() const
+        {
+            return topicDiscoveryKind;
+        }
 
 
-    /**
-     * Get the topic name
-     * @return Topic name
-     */
-    const std::string& getTopicName() const
-    {
-        return topicName;
-    }
+        /**
+         * Get the topic name
+         * @return Topic name
+         */
+        const std::string& getTopicName() const
+        {
+            return topicName;
+        }
 
-    /**
-     * Method to check whether the defined QOS are correct.
-     * @return True if they are valid.
-     */
-    bool checkQos() const;
+        /**
+         * Method to check whether the defined QOS are correct.
+         * @return True if they are valid.
+         */
+        bool checkQos() const;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS_PUBLIC

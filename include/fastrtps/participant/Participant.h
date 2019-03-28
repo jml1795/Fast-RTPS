@@ -43,65 +43,67 @@ namespace rtps
  */
 class RTPS_DllAPI Participant
 {
-    friend class Domain;
-    friend class ParticipantImpl;
+    public:
+        /**
+         *	Get the rtps::GUID_t of the associated RTPSParticipant.
+        * @return rtps::GUID_t
+        */
+        const rtps::GUID_t& getGuid() const;
 
-    Participant();
+        /**
+         * Get the ParticipantAttributes.
+         * @return ParticipantAttributes.
+         */
+        const ParticipantAttributes& getAttributes() const;
 
-    virtual ~Participant();
+        /**
+         * Called when using a StaticEndpointDiscovery mechanism different that the one
+         * included in FastRTPS, for example when communicating with other implementations.
+         * It indicates to the Participant that an Endpoint from the XML has been discovered and
+         * should be activated.
+         * @param partguid Participant rtps::GUID_t.
+         * @param userId User defined ID as shown in the XML file.
+         * @param kind EndpointKind (WRITER or READER)
+         * @return True if correctly found and activated.
+         */
+        bool newRemoteEndpointDiscovered(
+                const rtps::GUID_t& partguid,
+                uint16_t userId,
+                rtps::EndpointKind_t kind);
 
-    ParticipantImpl* mp_impl;
+        /**
+         * Returns a list with the participant names.
+         * @return list of participant names.
+         */
+        std::vector<std::string> getParticipantNames() const;
 
-public:
-    /**
-     *	Get the rtps::GUID_t of the associated RTPSParticipant.
-     * @return rtps::GUID_t
-     */
-    const rtps::GUID_t& getGuid() const;
+        /**
+         * Retrieves remote write information.
+         * @param writerGuid GUID of the writer.
+         * @param returnedInfo WriterProxyData to be filled.
+         */
+        bool get_remote_writer_info(
+                const rtps::GUID_t& writerGuid,
+                rtps::WriterProxyData& returnedInfo);
+        /**
+         * Retrieves remote reader information.
+         * @param readerGuid GUID of the reader.
+         * @param returnedInfo ReaderProxyData to be filled.
+         */
+        bool get_remote_reader_info(
+                const rtps::GUID_t& readerGuid,
+                rtps::ReaderProxyData& returnedInfo);
 
-    /**
-     * Get the ParticipantAttributes.
-     * @return ParticipantAttributes.
-     */
-    const ParticipantAttributes& getAttributes() const;
+    private:
+        Participant();
 
-    /**
-     * Called when using a StaticEndpointDiscovery mechanism different that the one
-     * included in FastRTPS, for example when communicating with other implementations.
-     * It indicates to the Participant that an Endpoint from the XML has been discovered and
-     * should be activated.
-     * @param partguid Participant rtps::GUID_t.
-     * @param userId User defined ID as shown in the XML file.
-     * @param kind EndpointKind (WRITER or READER)
-     * @return True if correctly found and activated.
-     */
-    bool newRemoteEndpointDiscovered(
-            const rtps::GUID_t& partguid,
-            uint16_t userId,
-            rtps::EndpointKind_t kind);
+        virtual ~Participant();
 
-    /**
-     * Returns a list with the participant names.
-     * @return list of participant names.
-     */
-    std::vector<std::string> getParticipantNames() const;
+        ParticipantImpl* mp_impl;
 
-    /**
-     * Retrieves remote write information.
-     * @param writerGuid GUID of the writer.
-     * @param returnedInfo WriterProxyData to be filled.
-     */
-    bool get_remote_writer_info(
-            const rtps::GUID_t& writerGuid,
-            rtps::WriterProxyData& returnedInfo);
-    /**
-     * Retrieves remote reader information.
-     * @param readerGuid GUID of the reader.
-     * @param returnedInfo ReaderProxyData to be filled.
-     */
-    bool get_remote_reader_info(
-            const rtps::GUID_t& readerGuid,
-            rtps::ReaderProxyData& returnedInfo);
+        friend class Domain;
+
+        friend class ParticipantImpl;
 };
 
 }

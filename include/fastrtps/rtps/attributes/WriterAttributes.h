@@ -42,15 +42,6 @@ typedef enum RTPSWriterPublishMode : octet
  */
 struct  WriterTimes
 {
-    //! Initial heartbeat delay. Default value ~11ms.
-    Duration_t initialHeartbeatDelay;
-    //! Periodic HB period, default value 3s.
-    Duration_t heartbeatPeriod;
-    //!Delay to apply to the response of a ACKNACK message, default value ~5ms.
-    Duration_t nackResponseDelay;
-    //!This time allows the RTPSWriter to ignore nack messages too soon after the data as sent, default value 0s.
-    Duration_t nackSupressionDuration;
-
     WriterTimes()
     {
         initialHeartbeatDelay.fraction = 50*1000*1000;
@@ -67,6 +58,15 @@ struct  WriterTimes
                (this->nackResponseDelay == b.nackResponseDelay) &&
                (this->nackSupressionDuration == b.nackSupressionDuration);
     }
+
+    //! Initial heartbeat delay. Default value ~11ms.
+    Duration_t initialHeartbeatDelay;
+    //! Periodic HB period, default value 3s.
+    Duration_t heartbeatPeriod;
+    //!Delay to apply to the response of a ACKNACK message, default value ~5ms.
+    Duration_t nackResponseDelay;
+    //!This time allows the RTPSWriter to ignore nack messages too soon after the data as sent, default value 0s.
+    Duration_t nackSupressionDuration;
 };
 
 /**
@@ -75,6 +75,16 @@ struct  WriterTimes
  */
 struct  WriterAttributes
 {
+    WriterAttributes() : mode(SYNCHRONOUS_WRITER),
+        disableHeartbeatPiggyback(false)
+    {
+        endpoint.endpointKind = WRITER;
+        endpoint.durabilityKind = TRANSIENT_LOCAL;
+        endpoint.reliabilityKind = RELIABLE;
+    }
+
+    virtual ~WriterAttributes(){}
+
     //!Attributes of the associated endpoint.
     EndpointAttributes endpoint;
 
@@ -89,16 +99,6 @@ struct  WriterAttributes
 
     //! Disable the sending of heartbeat piggybacks.
     bool disableHeartbeatPiggyback;
-
-    WriterAttributes() : mode(SYNCHRONOUS_WRITER),
-        disableHeartbeatPiggyback(false)
-    {
-        endpoint.endpointKind = WRITER;
-        endpoint.durabilityKind = TRANSIENT_LOCAL;
-        endpoint.reliabilityKind = RELIABLE;
-    }
-
-    virtual ~WriterAttributes(){}
 };
 
 /**
@@ -107,18 +107,6 @@ struct  WriterAttributes
  */
 struct RemoteReaderAttributes
 {
-    //!Attributes of the associated endpoint.
-    EndpointAttributes endpoint;
-
-    //!GUID_t of the reader.
-    GUID_t guid;
-
-    //!Expects inline QOS.
-    bool expectsInlineQos;
-
-    //!eProsima's endpoint?
-    bool is_eprosima_endpoint;
-
     RemoteReaderAttributes()
         : expectsInlineQos(false)
         , is_eprosima_endpoint(true)
@@ -134,6 +122,18 @@ struct RemoteReaderAttributes
     }
 
     virtual ~RemoteReaderAttributes() {}
+
+    //!Attributes of the associated endpoint.
+    EndpointAttributes endpoint;
+
+    //!GUID_t of the reader.
+    GUID_t guid;
+
+    //!Expects inline QOS.
+    bool expectsInlineQos;
+
+    //!eProsima's endpoint?
+    bool is_eprosima_endpoint;
 };
 
 }
