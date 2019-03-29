@@ -270,8 +270,8 @@ bool LatencyTestPublisher::init(int n_sub, int n_sam, bool reliable, uint32_t pi
     pt << pid << "_PUB2SUB";
     PubDataparam.topic.topicName = pt.str();
     PubDataparam.times.heartbeatPeriod.seconds = 0;
-    PubDataparam.times.heartbeatPeriod.fraction = 4294967 * 100;
-    
+    PubDataparam.times.heartbeatPeriod.nanosec = 100000000;
+
     if (!reliable)
     {
         PubDataparam.qos.m_reliability.kind = BEST_EFFORT_RELIABILITY_QOS;
