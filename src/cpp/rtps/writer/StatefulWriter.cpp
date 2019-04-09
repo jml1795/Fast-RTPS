@@ -255,10 +255,22 @@ bool StatefulWriter::change_removed_by_history(CacheChange_t* a_change)
 
 void StatefulWriter::send_any_unsent_changes()
 {
+    SequenceNumber_t max_sequence;
+    
+    // History may be currently adding changes and not have called our
+    // unsent_change_added_to_history method, so we need to get the
+    // next sequence in a protected way. Should be done before taking
+    // our mutex, as unsent_change_added_to_history is called with
+    // the history mutex taken, so the mutex order should always be
+    // history then writer.
+    {
+        std::lock_guard<std::recursive_mutex> hitory_guard(*mp_history->getMutex());
+        max_sequence = mp_history->next_sequence_number();
+    }
+
     std::lock_guard<std::recursive_mutex> guard(*mp_mutex);
 
     bool activateHeartbeatPeriod = false;
-    SequenceNumber_t max_sequence = mp_history->next_sequence_number();
 
     // Separate sending for asynchronous writers
     if (m_pushMode && m_separateSendingEnabled && isAsync())
