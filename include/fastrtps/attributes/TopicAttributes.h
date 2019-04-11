@@ -44,25 +44,25 @@ class TopicAttributes
         //! Topic Name.
         std::string topicName;
 
-        //!Topic Data Type.
+        //! Topic Data Type.
         std::string topicDataType;
 
-        //!QOS Regarding the History to be saved.
+        //! QOS regarding how history stores samples.
         HistoryQosPolicy historyQos;
 
-        //!QOS Regarding the resources to allocate.
+        //! QOS Regarding how resource limits affect the behavior. 
         ResourceLimitsQosPolicy resourceLimitsQos;
 
-        //!QOS Regarding the format of the data.
+        //! QOS Regarding the format of the data.
         DataRepresentationQosPolicy dataRepresentationQos;
 
-        //!QOS Regarding the consistency data to check.
+        //! QOS Regarding the consistency data to check.
         TypeConsistencyEnforcementQosPolicy typeConsistencyQos;
 
-        //!Type Identifier
+        //! Type Identifier
         TypeIdV1 type_id;
 
-        //!Type Object
+        //! Type Object
         TypeObjectV1 type;
 
         /**
