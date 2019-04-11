@@ -33,6 +33,8 @@ namespace eprosima {
 namespace fastrtps {
 namespace types {
 
+using namespace eprosima::fastrtps::rtps;
+
 static std::string GetTypeName(TypeKind kind)
 {
     switch (kind)

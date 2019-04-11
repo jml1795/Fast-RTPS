@@ -39,8 +39,6 @@ namespace eprosima
 namespace eprosima{
 namespace fastrtps{
 
-using namespace rtps;
-
 namespace types{
 
 /*!

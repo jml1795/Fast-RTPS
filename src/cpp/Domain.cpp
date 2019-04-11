@@ -72,9 +72,9 @@ void Domain::stopAll()
     }
 
     // Deletes DynamicTypes and TypeObject factories
-    DynamicTypeBuilderFactory::DeleteInstance();
-    DynamicDataFactory::DeleteInstance();
-    TypeObjectFactory::DeleteInstance();
+    types::DynamicTypeBuilderFactory::DeleteInstance();
+    types::DynamicDataFactory::DeleteInstance();
+    types::TypeObjectFactory::DeleteInstance();
     XMLProfileManager::DeleteInstance();
 
     eClock::my_sleep(100);
@@ -206,7 +206,7 @@ Publisher* Domain::createPublisher(
         logError(PUBLISHER, "Problem loading profile '" << publisher_profile << "'");
         return nullptr;
     }
- 
+
     return createPublisher(part, publisher_att, listen);
 }
 

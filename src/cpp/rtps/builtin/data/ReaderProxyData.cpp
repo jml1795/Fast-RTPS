@@ -558,5 +558,3 @@ RemoteReaderAttributes ReaderProxyData::toRemoteReaderAttributes() const
 }
 } /* namespace rtps */
 } /* namespace eprosima */
-
-

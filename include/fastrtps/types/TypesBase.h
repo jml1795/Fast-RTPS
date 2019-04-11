@@ -33,9 +33,9 @@ namespace fastcdr{
 namespace eprosima {
 namespace fastrtps {
 
-using namespace rtps;
-
 namespace types {
+
+using rtps::octet;
 
 const std::string ANNOTATION_KEY_ID = "@Key";
 const std::string ANNOTATION_TOPIC_ID = "@Topic";
@@ -391,5 +391,3 @@ const uint32_t ANNOTATION_OCTETSEC_VALUE_MAX_LEN = 128;
 } // namespace eprosima
 
 #endif // TYPES_BASE_H
-
-

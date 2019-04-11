@@ -31,6 +31,7 @@
 #include <tinyxml2.h>
 
 using namespace eprosima::fastrtps;
+using namespace eprosima::fastrtps::rtps;
 using namespace eprosima::fastrtps::types;
 
 class DynamicTypesTests: public ::testing::Test
@@ -54,7 +55,7 @@ class DynamicTypesTests: public ::testing::Test
         }
 
         const std::string& config_file()
-        { 
+        {
             return config_file_;
         }
 };
@@ -3714,7 +3715,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_EnumStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("EnumStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         // Enum
@@ -3816,7 +3817,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_BoolStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("BoolStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // Boolean
         DynamicTypeBuilder_ptr boolean_builder = m_factory->CreateBoolBuilder();
 
@@ -3843,7 +3844,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_OctetStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("OctetStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // Byte
         DynamicTypeBuilder_ptr byte_builder = m_factory->CreateByteBuilder();
 
@@ -3870,7 +3871,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_ShortStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("ShortStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // Int16
         DynamicTypeBuilder_ptr int16_builder = m_factory->CreateInt16Builder();
 
@@ -3897,7 +3898,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_LongStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("LongStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // Int32
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
 
@@ -3924,7 +3925,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_LongLongStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("LongLongStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // Int64
         DynamicTypeBuilder_ptr int64_builder = m_factory->CreateInt64Builder();
 
@@ -3951,7 +3952,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_UShortStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("UShortStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // uint16
         DynamicTypeBuilder_ptr uint16_builder = m_factory->CreateUint16Builder();
 
@@ -3978,7 +3979,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_ULongStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("ULongStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // uint32
         DynamicTypeBuilder_ptr uint32_builder = m_factory->CreateUint32Builder();
 
@@ -4005,7 +4006,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_ULongLongStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("ULongLongStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // uint64
         DynamicTypeBuilder_ptr uint64_builder = m_factory->CreateUint64Builder();
 
@@ -4032,7 +4033,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_FloatStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("FloatStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // float32
         DynamicTypeBuilder_ptr float32_builder = m_factory->CreateFloat32Builder();
 
@@ -4059,7 +4060,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_DoubleStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("DoubleStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // float64
         DynamicTypeBuilder_ptr float64_builder = m_factory->CreateFloat64Builder();
 
@@ -4086,7 +4087,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_LongDoubleStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("LongDoubleStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // float128
         DynamicTypeBuilder_ptr float128_builder = m_factory->CreateFloat128Builder();
 
@@ -4113,7 +4114,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_CharStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("CharStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // char
         DynamicTypeBuilder_ptr char8_builder = m_factory->CreateChar8Builder();
 
@@ -4167,7 +4168,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_StringStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("StringStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // string
         DynamicTypeBuilder_ptr string_builder = m_factory->CreateStringBuilder();
 
@@ -4275,7 +4276,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_ShortStringStruct_test)
         DynamicPubSubType* pbType = XMLProfileManager::CreateDynamicPubSubType("ShortStringStruct");
 
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
-        
+
         // Short string
         DynamicTypeBuilder_ptr string_builder = m_factory->CreateStringBuilder(15);
 
@@ -4512,7 +4513,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_SequenceStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("SequenceStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4538,7 +4539,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_SequenceSequenceStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("SequenceSequenceStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4566,7 +4567,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_MapStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("MapStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4592,7 +4593,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_MapMapStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("MapMapStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4621,7 +4622,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_StructStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("StructStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4648,7 +4649,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_StructStructStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("StructStructStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4680,7 +4681,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_SimpleUnionStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("SimpleUnionStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4712,7 +4713,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_UnionUnionStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("UnionUnionStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr int32_builder = m_factory->CreateInt32Builder();
@@ -4749,7 +4750,7 @@ TEST_F(DynamicTypesTests, DynamicType_XML_WCharUnionStruct_test)
     ASSERT_EQ(ret, XMLP_ret::XML_OK);
     {
         DynamicPubSubType *pbType = XMLProfileManager::CreateDynamicPubSubType("WCharUnionStruct");
-        
+
         DynamicTypeBuilderFactory* m_factory = DynamicTypeBuilderFactory::GetInstance();
 
         DynamicTypeBuilder_ptr wchar_builder = m_factory->CreateChar16Builder();

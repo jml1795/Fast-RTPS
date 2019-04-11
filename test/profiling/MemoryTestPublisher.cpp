@@ -34,6 +34,7 @@
 using namespace eprosima;
 using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
+using namespace eprosima::fastrtps::types;
 
 
 MemoryTestPublisher::MemoryTestPublisher()
@@ -433,7 +434,7 @@ bool MemoryTestPublisher::test(uint32_t test_time, uint32_t datasize)
 
     command.m_command = STOP;
     mp_commandpub->write(&command);
-    
+
     if(m_status !=0)
     {
         cout << "Error in test "<<endl;
