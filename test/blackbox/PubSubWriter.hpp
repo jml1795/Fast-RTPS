@@ -416,7 +416,7 @@ class PubSubWriter
         return *this;
     }
 
-    PubSubWriter& max_blocking_time(const eprosima::fastrtps::rtps::Duration_t time)
+    PubSubWriter& max_blocking_time(const eprosima::fastrtps::Duration_t time)
     {
         publisher_attr_.qos.m_reliability.max_blocking_time = time;
         return *this;

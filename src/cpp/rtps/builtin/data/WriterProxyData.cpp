@@ -444,7 +444,7 @@ bool WriterProxyData::readFromCDRMessage(CDRMessage_t* msg)
                 assert(p != nullptr);
                 m_type_id = *p;
                 m_topicDiscoveryKind = MINIMAL;
-                if (m_type_id.m_type_identifier._d() == EK_COMPLETE)
+                if (m_type_id.m_type_identifier._d() == types::EK_COMPLETE)
                 {
                     m_topicDiscoveryKind = COMPLETE;
                 }
@@ -456,7 +456,7 @@ bool WriterProxyData::readFromCDRMessage(CDRMessage_t* msg)
                 assert(p != nullptr);
                 m_type = *p;
                 m_topicDiscoveryKind = MINIMAL;
-                if (m_type.m_type_object._d() == EK_COMPLETE)
+                if (m_type.m_type_object._d() == types::EK_COMPLETE)
                 {
                     m_topicDiscoveryKind = COMPLETE;
                 }
@@ -465,7 +465,7 @@ bool WriterProxyData::readFromCDRMessage(CDRMessage_t* msg)
 #if HAVE_SECURITY
             case PID_ENDPOINT_SECURITY_INFO:
             {
-                const ParameterEndpointSecurityInfo_t* p = 
+                const ParameterEndpointSecurityInfo_t* p =
                     dynamic_cast<const ParameterEndpointSecurityInfo_t*>(param);
                 assert(p != nullptr);
                 security_attributes_ = p->security_attributes;
