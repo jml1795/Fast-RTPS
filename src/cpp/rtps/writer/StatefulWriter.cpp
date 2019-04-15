@@ -44,6 +44,7 @@
 #include <vector>
 #include <stdexcept>
 
+using namespace eprosima::fastrtps;
 using namespace eprosima::fastrtps::rtps;
 
 
@@ -66,7 +67,7 @@ StatefulWriter::StatefulWriter(
     , currentUsageSendBufferSize_(static_cast<int32_t>(pimpl->get_min_network_send_buffer_size()))
 {
     m_heartbeatCount = 0;
-    m_HBReaderEntityId = 
+    m_HBReaderEntityId =
         (guid.entityId == c_EntityId_SEDPPubWriter)    ? c_EntityId_SEDPPubReader :
         (guid.entityId == c_EntityId_SEDPSubWriter)    ? c_EntityId_SEDPSubReader :
         (guid.entityId == c_EntityId_WriterLiveliness) ? c_EntityId_ReaderLiveliness :
@@ -299,7 +300,7 @@ void StatefulWriter::send_any_unsent_changes()
                         if (unsentChange != nullptr && unsentChange->isRelevant() && unsentChange->isValid())
                         {
                             // As we checked we are not async, we know we cannot have fragments
-                            if (group.add_data(*(unsentChange->getChange()), guids, locators, 
+                            if (group.add_data(*(unsentChange->getChange()), guids, locators,
                                         remoteReader->expects_inline_qos()))
                             {
                                 remoteReader->set_change_to_status(seqNum, UNDERWAY, true);
@@ -974,7 +975,7 @@ bool StatefulWriter::send_periodic_heartbeat()
 }
 
 void StatefulWriter::send_heartbeat_to_nts(
-    ReaderProxy& remoteReaderProxy, 
+    ReaderProxy& remoteReaderProxy,
     bool final)
 {
     try
@@ -1032,7 +1033,7 @@ void StatefulWriter::send_heartbeat_nts_(
 }
 
 void StatefulWriter::send_heartbeat_piggyback_nts_(
-    const std::vector<GUID_t>& remote_readers, 
+    const std::vector<GUID_t>& remote_readers,
     const LocatorList_t& locators,
     RTPSMessageGroup& message_group,
     uint32_t& last_bytes_processed)
@@ -1098,10 +1099,10 @@ void StatefulWriter::perform_nack_supression(const GUID_t& reader_guid)
 }
 
 bool StatefulWriter::process_acknack(
-        const GUID_t& writer_guid, 
-        const GUID_t& reader_guid, 
+        const GUID_t& writer_guid,
+        const GUID_t& reader_guid,
         uint32_t ack_count,
-        const SequenceNumberSet_t& sn_set, 
+        const SequenceNumberSet_t& sn_set,
         bool final_flag,
         bool &result)
 {
